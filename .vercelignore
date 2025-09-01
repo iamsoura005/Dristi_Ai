@@ -20,11 +20,13 @@ package-lock.json
 frontend/package-lock.json
 frontend/node_modules/
 
-# Next.js build outputs
+# Next.js build outputs and cache
 .next/
 out/
 frontend/.next/
 frontend/out/
+frontend/.next/cache/
+.next/cache/
 
 # IDE and editor files
 .vscode/
@@ -58,6 +60,13 @@ instance/
 *.joblib
 backend/eye_disease_model.h5
 eye_disease_model.h5
+ishihara_model.h5
+backend/ishihara_model.h5
+
+# Large JSON data files
+Ishiharas-Test-for-Color-Deficiency.json
+*.wasm
+*.dll
 
 # Development tools and repositories
 SWE-agent/
