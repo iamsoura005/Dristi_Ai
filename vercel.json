@@ -23,7 +23,7 @@
   "env": {
     "TF_CPP_MIN_LOG_LEVEL": "2",
     "PYTHONPATH": "$PYTHONPATH:./backend",
-    "MODEL_URL": "https://huggingface.co/your-username/hackloop-eye-disease-model/resolve/main/eye_disease_model.h5"
+    "MODEL_URL": "https://github.com/iamsoura005/Dristi_Ai/releases/download/v1.0.0/eye_disease_model.h5"
   },
   "functions": {
     "api/index.py": {
