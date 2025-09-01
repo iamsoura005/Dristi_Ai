@@ -1,7 +1,4 @@
-"use client"
-
 import { Suspense } from "react"
-import { useSearchParams } from "next/navigation"
 import SharedResultView from "@/components/ui/shared-result-view"
 
 interface PageProps {
@@ -10,18 +7,12 @@ interface PageProps {
   }
 }
 
-function SharedResultContent({ shareId }: { shareId: string }) {
-  const searchParams = useSearchParams()
-  const accessLevel = searchParams.get('access') || 'view'
-  const expiryTime = searchParams.get('expires') || Date.now().toString()
-
-  return (
-    <SharedResultView 
-      shareId={shareId}
-      accessLevel={accessLevel}
-      expiryTime={expiryTime}
-    />
-  )
+// Generate static params for export
+export function generateStaticParams() {
+  // For static export, we'll generate a few common paths
+  return [
+    { shareId: 'example' },
+  ]
 }
 
 export default function SharedResultPage({ params }: PageProps) {
@@ -31,7 +22,11 @@ export default function SharedResultPage({ params }: PageProps) {
         <div className="text-white text-lg">Loading shared result...</div>
       </div>
     }>
-      <SharedResultContent shareId={params.shareId} />
+      <SharedResultView 
+        shareId={params.shareId}
+        accessLevel="view"  // Default access level for static export
+        expiryTime={Date.now().toString()}  // Default expiry time
+      />
     </Suspense>
   )
 }
