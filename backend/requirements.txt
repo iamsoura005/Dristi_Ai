@@ -1,0 +1,10 @@
+flask
+flask-cors
+flask-jwt-extended
+flask-sqlalchemy
+tensorflow
+pillow
+numpy
+python-dotenv
+flask-mail
+openai

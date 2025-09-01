@@ -1,0 +1,85 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "download": "Download",
+    "print": "Print"
+  },
+  "navigation": {
+    "home": "Home",
+    "analyze": "Analyze",
+    "colorTest": "Color Test",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Create Account",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "username": "Username",
+    "forgotPassword": "Forgot Password?",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign In",
+    "signUp": "Sign Up"
+  },
+  "colorTest": {
+    "title": "Color Blindness Screening Test",
+    "subtitle": "Take our interactive Ishihara color vision test to screen for color vision deficiencies",
+    "instructions": "Test Instructions",
+    "instructionsList": {
+      "look": "Look at each colored dot pattern carefully",
+      "identify": "Identify the number you see in the pattern",
+      "select": "Select your answer from the options provided",
+      "complete": "Complete all 5 plates to get your results"
+    },
+    "startTest": "Start Color Vision Test",
+    "plateLabel": "Plate {number} of {total}",
+    "questionLabel": "What number do you see in the image?",
+    "inputPlaceholder": "Enter the number you see",
+    "nextPlate": "Next Plate",
+    "testComplete": "Test Complete!",
+    "results": {
+      "correctAnswers": "Correct Answers",
+      "accuracy": "Accuracy",
+      "avgTime": "Avg. Time",
+      "aiDiagnosis": "AI Diagnosis",
+      "recommendations": "Recommendations",
+      "severity": "Severity",
+      "prevalence": "Prevalence"
+    },
+    "actions": {
+      "takeAgain": "Take Test Again",
+      "downloadReport": "Download Report",
+      "printReport": "Print Report"
+    }
+  },
+  "eyeDisease": {
+    "title": "Eye Disease Detection",
+    "subtitle": "Upload a fundus image for AI-powered disease screening",
+    "uploadInstructions": "Upload a clear fundus image (JPEG or PNG format)",
+    "analyzing": "Analyzing image...",
+    "results": {
+      "prediction": "Predicted Condition",
+      "confidence": "Confidence Level",
+      "testDate": "Test Date"
+    }
+  },
+  "results": {
+    "emailSent": "Results sent to your email",
+    "saveToHistory": "Saved to your test history",
+    "disclaimer": "This AI-based screening is for preliminary assessment only. Please consult with an eye care professional for proper diagnosis."
+  }
+}

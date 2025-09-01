@@ -1,0 +1,354 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { Eye, EyeOff, UserPlus, Mail, Lock, User, Users, ArrowRight, LogIn } from "lucide-react"
+import { Navigation } from "@/components/navigation"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useAuth } from "@/components/auth/auth-provider"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+
+export default function RegisterPage() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    role: "patient" as "patient" | "doctor" | "admin",
+  })
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  
+  const { register, isAuthenticated } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/")
+    }
+  }, [isAuthenticated, router])
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+    setError("") // Clear error when user types
+  }
+
+  const validateForm = () => {
+    const { email, password, confirmPassword, firstName, lastName } = formData
+    
+    if (!email.trim() || !password.trim() || !confirmPassword.trim() || !firstName.trim() || !lastName.trim()) {
+      return "All fields are required"
+    }
+    
+    if (password !== confirmPassword) {
+      return "Passwords do not match"
+    }
+    
+    if (password.length < 8) {
+      return "Password must be at least 8 characters long"
+    }
+    
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+      return "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+    }
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return "Please enter a valid email address"
+    }
+    
+    return null
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    const validationError = validateForm()
+    if (validationError) {
+      setError(validationError)
+      return
+    }
+    
+    setLoading(true)
+
+    try {
+      await register({
+        email: formData.email,
+        password: formData.password,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        role: formData.role,
+      })
+      // Redirect will happen via useEffect when isAuthenticated changes
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Registration failed")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const isFormValid = () => {
+    const { email, password, confirmPassword, firstName, lastName } = formData
+    return email.trim() && password.trim() && confirmPassword.trim() && firstName.trim() && lastName.trim()
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+      <Navigation />
+
+      <div className="pt-24 pb-16 px-4">
+        <div className="max-w-md mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="glass rounded-2xl p-8 space-y-6"
+          >
+            {/* Header */}
+            <div className="text-center space-y-2">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="w-16 h-16 mx-auto bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center"
+              >
+                <UserPlus className="w-8 h-8 text-white" />
+              </motion.div>
+              
+              <h1 className="text-3xl font-bold text-white">Create Account</h1>
+              <p className="text-gray-200">Join our medical AI platform</p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Name Fields */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label htmlFor="firstName" className="text-sm font-medium text-white">
+                    First Name
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-300" />
+                    <Input
+                      id="firstName"
+                      type="text"
+                      placeholder="John"
+                      value={formData.firstName}
+                      onChange={(e) => handleInputChange("firstName", e.target.value)}
+                      className="pl-10 bg-white/10 border-white/30 text-white placeholder-gray-300 focus:border-blue-400 focus:ring-blue-400/20"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="lastName" className="text-sm font-medium text-white">
+                    Last Name
+                  </label>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    placeholder="Doe"
+                    value={formData.lastName}
+                    onChange={(e) => handleInputChange("lastName", e.target.value)}
+                    className="bg-white/10 border-white/30 text-white placeholder-gray-300 focus:border-blue-400 focus:ring-blue-400/20"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Email Input */}
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium text-white">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-300" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="john@example.com"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    className="pl-10 bg-white/10 border-white/30 text-white placeholder-gray-300 focus:border-blue-400 focus:ring-blue-400/20"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Role Selection */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Account Type</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleInputChange("role", "patient")}
+                    className={`p-3 rounded-lg border transition-all text-sm font-medium ${ 
+                      formData.role === "patient"
+                        ? "bg-blue-500/30 border-blue-400 text-blue-300"
+                        : "bg-white/10 border-white/20 text-gray-200 hover:bg-white/20"
+                    }`}
+                  >
+                    <User className="w-4 h-4 mx-auto mb-1" />
+                    Patient
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInputChange("role", "doctor")}
+                    className={`p-3 rounded-lg border transition-all text-sm font-medium ${
+                      formData.role === "doctor"
+                        ? "bg-green-500/30 border-green-400 text-green-300"
+                        : "bg-white/10 border-white/20 text-gray-200 hover:bg-white/20"
+                    }`}
+                  >
+                    <Users className="w-4 h-4 mx-auto mb-1" />
+                    Doctor
+                  </button>
+                </div>
+              </div>
+
+              {/* Password Input */}
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-medium text-white">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-300" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a strong password"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange("password", e.target.value)}
+                    className="pl-10 pr-10 bg-white/10 border-white/30 text-white placeholder-gray-300 focus:border-blue-400 focus:ring-blue-400/20"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-300 hover:text-white transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password Input */}
+              <div className="space-y-2">
+                <label htmlFor="confirmPassword" className="text-sm font-medium text-white">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-300" />
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                    className="pl-10 pr-10 bg-white/10 border-white/30 text-white placeholder-gray-300 focus:border-blue-400 focus:ring-blue-400/20"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-300 hover:text-white transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="p-3 rounded-lg bg-red-500/20 border border-red-500/30 text-red-300 text-sm"
+                >
+                  {error}
+                </motion.div>
+              )}
+
+              {/* Submit Button */}
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  type="submit"
+                  disabled={!isFormValid() || loading}
+                  className="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white py-6 text-lg rounded-xl shadow-xl shadow-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed group"
+                >
+                  {loading ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                    />
+                  ) : (
+                    <>
+                      Create Account
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
+                </Button>
+              </motion.div>
+            </form>
+
+            {/* Footer Links */}
+            <div className="space-y-4">
+              <div className="text-center text-xs text-gray-300 leading-relaxed">
+                By creating an account, you agree to our{" "}
+                <Link href="/terms" className="text-blue-300 hover:text-blue-200">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" className="text-blue-300 hover:text-blue-200">
+                  Privacy Policy
+                </Link>
+              </div>
+              
+              <div className="flex items-center">
+                <div className="flex-1 border-t border-white/20"></div>
+                <span className="px-3 text-sm text-gray-300">or</span>
+                <div className="flex-1 border-t border-white/20"></div>
+              </div>
+
+              <div className="text-center">
+                <span className="text-gray-200">Already have an account? </span>
+                <Link
+                  href="/login"
+                  className="text-blue-300 hover:text-blue-200 transition-colors font-medium"
+                >
+                  Sign in here
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Password Requirements */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="mt-6 text-center"
+          >
+            <div className="glass rounded-xl p-4">
+              <div className="flex items-center justify-center space-x-2 mb-2">
+                <Lock className="w-4 h-4 text-blue-300" />
+                <span className="text-sm font-medium text-white">Password Requirements</span>
+              </div>
+              <div className="text-xs text-gray-300 space-y-1">
+                <p>• At least 8 characters long</p>
+                <p>• Contains uppercase and lowercase letters</p>
+                <p>• Contains at least one number</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  )
+}

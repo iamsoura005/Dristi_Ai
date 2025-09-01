@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <defs>
+    <pattern id="dots1" patternUnits="userSpaceOnUse" width="20" height="20">
+      <circle cx="10" cy="10" r="8" fill="#8B7355" opacity="0.9"/>
+    </pattern>
+  </defs>
+  
+  <!-- Main circle background -->
+  <circle cx="200" cy="200" r="180" fill="#F5F5DC" stroke="#666" stroke-width="2"/>
+  
+  <!-- Background dots pattern -->
+  <g>
+    <!-- Light brown/tan background dots -->
+    <circle cx="80" cy="80" r="6" fill="#DEB887" opacity="0.8"/>
+    <circle cx="100" cy="95" r="7" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="125" cy="75" r="5" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="150" cy="85" r="8" fill="#DEB887" opacity="0.8"/>
+    <circle cx="175" cy="70" r="6" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="200" cy="80" r="7" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="225" cy="85" r="5" fill="#DEB887" opacity="0.8"/>
+    <circle cx="250" cy="75" r="8" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="275" cy="90" r="6" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="300" cy="80" r="7" fill="#DEB887" opacity="0.8"/>
+    <circle cx="320" cy="95" r="5" fill="#F5DEB3" opacity="0.9"/>
+    
+    <!-- More background dots -->
+    <circle cx="70" cy="120" r="7" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="90" cy="135" r="6" fill="#DEB887" opacity="0.8"/>
+    <circle cx="110" cy="125" r="8" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="130" cy="140" r="5" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="155" cy="130" r="7" fill="#DEB887" opacity="0.8"/>
+    <circle cx="245" cy="130" r="6" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="270" cy="125" r="8" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="290" cy="140" r="5" fill="#DEB887" opacity="0.8"/>
+    <circle cx="310" cy="130" r="7" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="330" cy="135" r="6" fill="#D2B48C" opacity="0.7"/>
+    
+    <!-- Continue pattern around the circle -->
+    <circle cx="60" cy="160" r="6" fill="#DEB887" opacity="0.8"/>
+    <circle cx="80" cy="175" r="7" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="100" cy="165" r="5" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="320" cy="165" r="8" fill="#DEB887" opacity="0.8"/>
+    <circle cx="340" cy="175" r="6" fill="#F5DEB3" opacity="0.9"/>
+    
+    <!-- Middle row dots -->
+    <circle cx="50" cy="200" r="7" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="70" cy="190" r="6" fill="#DEB887" opacity="0.8"/>
+    <circle cx="90" cy="210" r="8" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="110" cy="195" r="5" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="130" cy="205" r="7" fill="#DEB887" opacity="0.8"/>
+    <circle cx="270" cy="195" r="6" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="290" cy="210" r="8" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="310" cy="190" r="5" fill="#DEB887" opacity="0.8"/>
+    <circle cx="330" cy="205" r="7" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="350" cy="200" r="6" fill="#D2B48C" opacity="0.7"/>
+    
+    <!-- Lower section dots -->
+    <circle cx="60" cy="240" r="6" fill="#DEB887" opacity="0.8"/>
+    <circle cx="80" cy="255" r="7" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="100" cy="245" r="5" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="120" cy="260" r="8" fill="#DEB887" opacity="0.8"/>
+    <circle cx="280" cy="245" r="6" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="300" cy="260" r="7" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="320" cy="255" r="5" fill="#DEB887" opacity="0.8"/>
+    <circle cx="340" cy="240" r="8" fill="#F5DEB3" opacity="0.9"/>
+    
+    <!-- Bottom section -->
+    <circle cx="80" cy="295" r="7" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="100" cy="285" r="6" fill="#DEB887" opacity="0.8"/>
+    <circle cx="125" cy="300" r="8" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="150" cy="290" r="5" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="175" cy="305" r="7" fill="#DEB887" opacity="0.8"/>
+    <circle cx="200" cy="295" r="6" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="225" cy="300" r="8" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="250" cy="290" r="5" fill="#DEB887" opacity="0.8"/>
+    <circle cx="275" cy="305" r="7" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="300" cy="285" r="6" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="320" cy="295" r="8" fill="#DEB887" opacity="0.8"/>
+    
+    <!-- Bottom edge -->
+    <circle cx="100" cy="325" r="6" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="125" cy="335" r="7" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="150" cy="325" r="5" fill="#DEB887" opacity="0.8"/>
+    <circle cx="175" cy="340" r="8" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="200" cy="330" r="6" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="225" cy="335" r="7" fill="#DEB887" opacity="0.8"/>
+    <circle cx="250" cy="325" r="5" fill="#F5DEB3" opacity="0.9"/>
+    <circle cx="275" cy="340" r="8" fill="#D2B48C" opacity="0.7"/>
+    <circle cx="300" cy="325" r="6" fill="#DEB887" opacity="0.8"/>
+  </g>
+  
+  <!-- Number 12 in contrasting green dots -->
+  <g>
+    <!-- Digit 1 (left) -->
+    <circle cx="160" cy="150" r="7" fill="#228B22" opacity="1"/>
+    <circle cx="165" cy="140" r="6" fill="#32CD32" opacity="1"/>
+    <circle cx="170" cy="160" r="8" fill="#228B22" opacity="1"/>
+    <circle cx="165" cy="170" r="7" fill="#32CD32" opacity="1"/>
+    <circle cx="160" cy="180" r="6" fill="#228B22" opacity="1"/>
+    <circle cx="170" cy="190" r="8" fill="#32CD32" opacity="1"/>
+    <circle cx="165" cy="200" r="7" fill="#228B22" opacity="1"/>
+    <circle cx="160" cy="210" r="6" fill="#32CD32" opacity="1"/>
+    <circle cx="170" cy="220" r="8" fill="#228B22" opacity="1"/>
+    <circle cx="165" cy="230" r="7" fill="#32CD32" opacity="1"/>
+    <circle cx="160" cy="240" r="6" fill="#228B22" opacity="1"/>
+    <circle cx="155" cy="250" r="8" fill="#32CD32" opacity="1"/>
+    <circle cx="165" cy="250" r="7" fill="#228B22" opacity="1"/>
+    <circle cx="175" cy="250" r="6" fill="#32CD32" opacity="1"/>
+    
+    <!-- Digit 2 (right) -->
+    <!-- Top horizontal line -->
+    <circle cx="210" cy="150" r="7" fill="#228B22" opacity="1"/>
+    <circle cx="220" cy="145" r="6" fill="#32CD32" opacity="1"/>
+    <circle cx="230" cy="150" r="8" fill="#228B22" opacity="1"/>
+    <circle cx="240" cy="155" r="7" fill="#32CD32" opacity="1"/>
+    
+    <!-- Right vertical line (top) -->
+    <circle cx="245" cy="165" r="6" fill="#228B22" opacity="1"/>
+    <circle cx="250" cy="175" r="8" fill="#32CD32" opacity="1"/>
+    <circle cx="245" cy="185" r="7" fill="#228B22" opacity="1"/>
+    
+    <!-- Middle horizontal line -->
+    <circle cx="240" cy="195" r="6" fill="#32CD32" opacity="1"/>
+    <circle cx="230" cy="200" r="8" fill="#228B22" opacity="1"/>
+    <circle cx="220" cy="195" r="7" fill="#32CD32" opacity="1"/>
+    <circle cx="210" cy="200" r="6" fill="#228B22" opacity="1"/>
+    
+    <!-- Left vertical line (bottom) -->
+    <circle cx="205" cy="210" r="8" fill="#32CD32" opacity="1"/>
+    <circle cx="210" cy="220" r="7" fill="#228B22" opacity="1"/>
+    <circle cx="205" cy="230" r="6" fill="#32CD32" opacity="1"/>
+    
+    <!-- Bottom horizontal line -->
+    <circle cx="210" cy="240" r="8" fill="#228B22" opacity="1"/>
+    <circle cx="220" cy="245" r="7" fill="#32CD32" opacity="1"/>
+    <circle cx="230" cy="240" r="6" fill="#228B22" opacity="1"/>
+    <circle cx="240" cy="245" r="8" fill="#32CD32" opacity="1"/>
+    <circle cx="250" cy="240" r="7" fill="#228B22" opacity="1"/>
+  </g>
+</svg>

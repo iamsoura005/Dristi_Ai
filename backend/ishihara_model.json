@@ -1,0 +1,110 @@
+{
+  "class_names": [
+    "normal", 
+    "protanopia", 
+    "deuteranopia", 
+    "tritanopia",
+    "protanomaly",
+    "deuteranomaly", 
+    "tritanomaly"
+  ],
+  "class_indices": {
+    "normal": 0,
+    "protanopia": 1,
+    "deuteranopia": 2,
+    "tritanopia": 3,
+    "protanomaly": 4,
+    "deuteranomaly": 5,
+    "tritanomaly": 6
+  },
+  "num_classes": 7,
+  "image_size": [224, 224],
+  "plates": [
+    {
+      "id": 1,
+      "correctAnswer": "12",
+      "difficulty": "easy",
+      "description": "Number 12 - Basic test plate"
+    },
+    {
+      "id": 2,
+      "correctAnswer": "8",
+      "difficulty": "medium",
+      "description": "Number 8 - Moderate difficulty"
+    },
+    {
+      "id": 3,
+      "correctAnswer": "29",
+      "difficulty": "easy",
+      "description": "Number 29 - Basic test plate"
+    },
+    {
+      "id": 4,
+      "correctAnswer": "5",
+      "difficulty": "hard",
+      "description": "Number 5 - Advanced test"
+    },
+    {
+      "id": 5,
+      "correctAnswer": "74",
+      "difficulty": "medium",
+      "description": "Number 74 - Moderate difficulty"
+    },
+    {
+      "id": 6,
+      "correctAnswer": "3",
+      "difficulty": "medium",
+      "description": "Number 3 - Moderate difficulty"
+    },
+    {
+      "id": 7,
+      "correctAnswer": "15",
+      "difficulty": "hard",
+      "description": "Number 15 - Advanced test"
+    },
+    {
+      "id": 8,
+      "correctAnswer": "6",
+      "difficulty": "easy",
+      "description": "Number 6 - Basic test plate"
+    },
+    {
+      "id": 9,
+      "correctAnswer": "42",
+      "difficulty": "medium",
+      "description": "Number 42 - Moderate difficulty"
+    },
+    {
+      "id": 10,
+      "correctAnswer": "97",
+      "difficulty": "hard",
+      "description": "Number 97 - Advanced test"
+    }
+  ],
+  "color_deficiency_patterns": {
+    "protanopia": {
+      "description": "Red color blindness (missing L-cones)",
+      "difficulty_plates": [1, 3, 5, 7, 9]
+    },
+    "deuteranopia": {
+      "description": "Green color blindness (missing M-cones)",
+      "difficulty_plates": [2, 4, 6, 8, 10]
+    },
+    "tritanopia": {
+      "description": "Blue color blindness (missing S-cones)",
+      "difficulty_plates": [4, 7, 10]
+    },
+    "protanomaly": {
+      "description": "Reduced red sensitivity",
+      "difficulty_plates": [1, 5, 9]
+    },
+    "deuteranomaly": {
+      "description": "Reduced green sensitivity",
+      "difficulty_plates": [2, 6, 8]
+    },
+    "tritanomaly": {
+      "description": "Reduced blue sensitivity",
+      "difficulty_plates": [4, 7]
+    }
+  }
+}

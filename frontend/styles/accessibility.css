@@ -1,0 +1,245 @@
+/* Accessibility and High Contrast Mode Styles */
+
+/* High contrast mode styles */
+.high-contrast {
+  /* Override all color schemes for maximum contrast */
+  --background: #000000;
+  --foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #ffff00;
+  --secondary-foreground: #000000;
+  --accent: #00ffff;
+  --accent-foreground: #000000;
+  --destructive: #ff0000;
+  --destructive-foreground: #ffffff;
+  --border: #ffffff;
+  --input: #ffffff;
+  --ring: #ffff00;
+}
+
+.high-contrast * {
+  color: #ffffff !important;
+  background-color: #000000 !important;
+  border-color: #ffffff !important;
+}
+
+.high-contrast .glass {
+  background: #000000 !important;
+  border: 2px solid #ffffff !important;
+  backdrop-filter: none !important;
+}
+
+.high-contrast button {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #ffffff !important;
+  font-weight: bold !important;
+}
+
+.high-contrast button:hover {
+  background: #ffff00 !important;
+  color: #000000 !important;
+}
+
+.high-contrast a {
+  color: #00ffff !important;
+  text-decoration: underline !important;
+}
+
+.high-contrast a:hover {
+  color: #ffff00 !important;
+}
+
+/* Focus indicators for keyboard navigation */
+.focus-visible:focus-visible {
+  outline: 3px solid #ffff00 !important;
+  outline-offset: 2px !important;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link for keyboard navigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #000000;
+  color: #ffffff;
+  padding: 8px;
+  z-index: 100;
+  text-decoration: none;
+  border-radius: 4px;
+  border: 2px solid #ffffff;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* High contrast toggle button */
+.contrast-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  padding: 10px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.contrast-toggle:hover {
+  background: #ffffff;
+  color: #000000;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Large text mode */
+.large-text {
+  font-size: 1.25em !important;
+  line-height: 1.6 !important;
+}
+
+.large-text h1 {
+  font-size: 2.5em !important;
+}
+
+.large-text h2 {
+  font-size: 2em !important;
+}
+
+.large-text h3 {
+  font-size: 1.75em !important;
+}
+
+.large-text button {
+  font-size: 1.25em !important;
+  padding: 12px 24px !important;
+}
+
+/* ARIA live regions for screen readers */
+.live-region {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Focus trap for modals */
+.focus-trap {
+  position: relative;
+}
+
+.focus-trap:before,
+.focus-trap:after {
+  content: "";
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+/* High contrast images */
+.high-contrast img,
+.high-contrast svg {
+  filter: contrast(200%) brightness(150%) !important;
+}
+
+/* Color blind friendly palette alternatives */
+.colorblind-safe {
+  --success-color: #0066cc;
+  --warning-color: #ff9900;
+  --error-color: #cc0000;
+  --info-color: #6600cc;
+}
+
+/* Keyboard navigation indicators */
+*:focus-visible {
+  outline: 3px solid #4285f4;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Better button states for accessibility */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button[aria-pressed="true"] {
+  background-color: #4285f4;
+  color: white;
+}
+
+/* Form field accessibility */
+input:invalid,
+textarea:invalid {
+  border-color: #cc0000;
+  box-shadow: 0 0 0 2px rgba(204, 0, 0, 0.2);
+}
+
+input:valid,
+textarea:valid {
+  border-color: #0066cc;
+}
+
+/* Table accessibility */
+table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+table caption {
+  caption-side: top;
+  text-align: left;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+/* Loading states */
+.loading {
+  position: relative;
+}
+
+.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}

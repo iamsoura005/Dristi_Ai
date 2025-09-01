@@ -1,0 +1,20 @@
+{
+	"$schema": "https://unpkg.com/jsrepo@2.4.5/schemas/registry-config.json",
+	"name": "@soura",
+	"version": "0.0.1",
+	"readme": "README.md",
+	"dirs": [
+		"./src"
+	],
+	"doNotListBlocks": [],
+	"doNotListCategories": [],
+	"listBlocks": [],
+	"listCategories": [],
+	"excludeDeps": [],
+	"includeBlocks": [],
+	"includeCategories": [],
+	"excludeBlocks": [],
+	"excludeCategories": [],
+	"preview": false,
+	"includeDocs": false
+}

@@ -1,0 +1,38 @@
+# Python virtual environment
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Next.js build output
+frontend/.next/
+frontend/out/
+
+# Node modules
+frontend/node_modules/
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Large files
+*.h5
+backend/eye_disease_model.h5
+eye_disease_model.h5
+
+# Embedded repositories
+SWE-agent/

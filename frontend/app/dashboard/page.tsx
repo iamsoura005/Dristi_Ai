@@ -1,0 +1,501 @@
+"use client"
+
+import { useState } from "react"
+import { motion } from "framer-motion"
+import { User, TestTube, Activity, Calendar, TrendingUp, Eye, Download, Clock, CheckCircle, Loader2 } from "lucide-react"
+import { Navigation } from "@/components/navigation"
+import { Button } from "@/components/ui/button"
+import { ProtectedRoute } from "@/components/auth/protected-route"
+import { useAuth } from "@/components/auth/auth-provider"
+import EmailButton from "@/components/ui/email-button"
+import HealthTrendsModal from "@/components/ui/health-trends-modal"
+import jsPDF from "jspdf"
+
+function DashboardContent() {
+  const { user } = useAuth()
+  const [activeTab, setActiveTab] = useState<"overview" | "tests" | "reports">("overview")
+  const [downloadingPdf, setDownloadingPdf] = useState(false)
+  const [showTrendsModal, setShowTrendsModal] = useState(false)
+
+  // Mock data for demonstration
+  const testHistory = [
+    { id: 1, type: "Eye Disease Analysis", result: "Normal", date: "2024-08-30", confidence: 95 },
+    { id: 2, type: "Color Blindness Test", result: "Normal Vision", date: "2024-08-29", confidence: 98 },
+    { id: 3, type: "Eye Disease Analysis", result: "Mild Cataract", date: "2024-08-25", confidence: 87 },
+  ]
+
+  const stats = [
+    { label: "Total Tests", value: "12", icon: TestTube, color: "from-blue-500 to-cyan-500" },
+    { label: "Normal Results", value: "10", icon: CheckCircle, color: "from-green-500 to-emerald-500" },
+    { label: "Avg Confidence", value: "94%", icon: TrendingUp, color: "from-purple-500 to-pink-500" },
+    { label: "Last Test", value: "2 days ago", icon: Clock, color: "from-orange-500 to-red-500" },
+  ]
+
+  // PDF generation function
+  const generatePDF = async () => {
+    setDownloadingPdf(true)
+    try {
+      console.log('Starting PDF generation...')
+      
+      // Create a new PDF document
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      })
+      
+      // Set up the PDF content
+      doc.setFillColor(17, 24, 39) // Dark background
+      doc.rect(0, 0, 210, 297, 'F') // Fill the entire page
+      
+      // Add title
+      doc.setTextColor(255, 255, 255)
+      doc.setFontSize(24)
+      doc.text('Medical Test History Report', 105, 25, { align: 'center' })
+      
+      // Add user info
+      doc.setFontSize(14)
+      doc.setTextColor(200, 200, 200)
+      doc.text(`Patient: ${user?.first_name} ${user?.last_name || ''}`, 105, 40, { align: 'center' })
+      doc.text(`Generated: ${new Date().toLocaleDateString()}`, 105, 50, { align: 'center' })
+      
+      // Add statistics section
+      doc.setTextColor(255, 255, 255)
+      doc.setFontSize(18)
+      doc.text('Test Statistics', 20, 70)
+      
+      let yPosition = 85
+      stats.forEach((stat) => {
+        doc.setFontSize(14)
+        doc.text(`${stat.label}:`, 20, yPosition)
+        doc.setTextColor(59, 130, 246) // Blue color
+        doc.text(stat.value, 120, yPosition)
+        doc.setTextColor(255, 255, 255)
+        yPosition += 12
+      })
+      
+      // Add test history section
+      yPosition += 20
+      doc.setFontSize(18)
+      doc.text('Test History', 20, yPosition)
+      yPosition += 15
+      
+      testHistory.forEach((test, index) => {
+        doc.setFontSize(12)
+        doc.text(`${index + 1}. ${test.type}`, 20, yPosition)
+        doc.text(`Date: ${test.date}`, 20, yPosition + 8)
+        doc.text(`Result: ${test.result}`, 20, yPosition + 16)
+        doc.text(`Confidence: ${test.confidence}%`, 20, yPosition + 24)
+        
+        // Add result color coding
+        if (test.result === "Normal" || test.result === "Normal Vision") {
+          doc.setTextColor(100, 255, 100) // Green
+        } else {
+          doc.setTextColor(255, 255, 100) // Yellow
+        }
+        doc.text(`● ${test.result}`, 120, yPosition + 16)
+        doc.setTextColor(255, 255, 255)
+        
+        yPosition += 40
+        
+        // Add new page if needed
+        if (yPosition > 250) {
+          doc.addPage()
+          doc.setFillColor(17, 24, 39)
+          doc.rect(0, 0, 210, 297, 'F')
+          yPosition = 20
+        }
+      })
+      
+      // Add disclaimer
+      yPosition += 20
+      if (yPosition > 250) {
+        doc.addPage()
+        doc.setFillColor(17, 24, 39)
+        doc.rect(0, 0, 210, 297, 'F')
+        yPosition = 20
+      }
+      
+      doc.setTextColor(200, 200, 200)
+      doc.setFontSize(10)
+      const disclaimer = 'Disclaimer: This report is for informational purposes only and should not replace professional medical consultation. Please consult with a qualified healthcare provider for medical advice.'
+      const disclaimerLines = doc.splitTextToSize(disclaimer, 170)
+      doc.text(disclaimerLines, 20, yPosition)
+      
+      // Add footer
+      doc.setTextColor(150, 150, 150)
+      doc.setFontSize(9)
+      doc.text('Generated by Hackloop Medical AI', 105, 285, { align: 'center' })
+      
+      // Save the PDF
+      const filename = `medical-history-${new Date().toISOString().split('T')[0]}.pdf`
+      console.log('Saving PDF:', filename)
+      
+      doc.save(filename)
+      
+      console.log('PDF generated successfully!')
+    } catch (err) {
+      console.error('Error generating PDF:', err)
+      alert('Failed to generate PDF. Please try again.')
+    } finally {
+      setDownloadingPdf(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+      <Navigation />
+
+      <div className="pt-24 pb-16 px-4">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-8"
+          >
+            <div className="glass rounded-2xl p-6">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                  <User className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-white">
+                    Welcome back, {user?.first_name}!
+                  </h1>
+                  <p className="text-gray-300 capitalize">
+                    {user?.role} Dashboard • {user?.email}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Stats Cards */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+          >
+            {stats.map((stat, index) => {
+              const Icon = stat.icon
+              return (
+                <motion.div
+                  key={stat.label}
+                  whileHover={{ y: -5, scale: 1.02 }}
+                  className="glass rounded-xl p-6"
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className={`w-12 h-12 bg-gradient-to-r ${stat.color} rounded-lg flex items-center justify-center`}>
+                      <Icon className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-white">{stat.value}</div>
+                      <div className="text-sm text-gray-400">{stat.label}</div>
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </motion.div>
+
+          {/* Tabs */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mb-6"
+          >
+            <div className="flex space-x-1 glass rounded-xl p-1">
+              {([
+                { id: "overview", label: "Overview", icon: Activity },
+                { id: "tests", label: "Test History", icon: TestTube },
+                { id: "reports", label: "Reports", icon: Download },
+              ] as const).map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-lg transition-all ${
+                      activeTab === tab.id
+                        ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+                        : "text-gray-400 hover:text-white hover:bg-white/5"
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className="font-medium">{tab.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </motion.div>
+
+          {/* Content */}
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+            className="glass rounded-2xl p-6"
+          >
+            {activeTab === "overview" && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-white mb-4">Recent Activity</h2>
+                <div className="space-y-4">
+                  {testHistory.slice(0, 3).map((test) => (
+                    <div
+                      key={test.id}
+                      className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                          <Eye className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-white">{test.type}</div>
+                          <div className="text-sm text-gray-400">{test.date}</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-green-400">{test.result}</div>
+                        <div className="text-xs text-gray-400">{test.confidence}% confidence</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="flex space-x-4 pt-4">
+                  <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
+                    Take New Test
+                  </Button>
+                  <Button variant="outline" className="border-white/20 text-black bg-white hover:bg-gray-100">
+                    View All Results
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "tests" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-white">Test History</h2>
+                  <Button 
+                    onClick={generatePDF}
+                    disabled={downloadingPdf}
+                    className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
+                  >
+                    {downloadingPdf ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Generating PDF...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4 mr-2" />
+                        Export Data
+                      </>
+                    )}
+                  </Button>
+                </div>
+                
+                <div className="space-y-3">
+                  {testHistory.map((test) => (
+                    <div
+                      key={test.id}
+                      className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                          <Eye className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-white">{test.type}</div>
+                          <div className="text-sm text-gray-400">
+                            {test.date} • {test.confidence}% confidence
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <div className="text-right">
+                          <div className={`font-medium ${
+                            test.result === "Normal" || test.result === "Normal Vision" 
+                              ? "text-green-600" 
+                              : "text-yellow-600"
+                          }`}>
+                            {test.result}
+                          </div>
+                        </div>
+                        <Button size="sm" variant="outline" className="border-white/20 text-black bg-white hover:bg-gray-100">
+                          View Details
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "reports" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-white">Medical Reports</h2>
+                  <div className="flex space-x-3">
+                    <EmailButton 
+                      type="comprehensive"
+                      variant="default"
+                      className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700"
+                    >
+                      Email All Reports
+                    </EmailButton>
+                    <Button 
+                      onClick={generatePDF}
+                      disabled={downloadingPdf}
+                      className="bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
+                    >
+                      {downloadingPdf ? (
+                        <>
+                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Download className="w-4 h-4 mr-2" />
+                          Download PDF
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Report Summary Cards */}
+                  <div className="bg-white/5 rounded-lg border border-white/10 p-6">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                        <Eye className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-white">Eye Disease Tests</h3>
+                        <p className="text-sm text-gray-400">Total: {testHistory.filter(t => t.type === 'Eye Disease Analysis').length} tests</p>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Normal Results:</span>
+                        <span className="text-green-400">85%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Last Test:</span>
+                        <span className="text-white">2 days ago</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/5 rounded-lg border border-white/10 p-6">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <TestTube className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-white">Color Vision Tests</h3>
+                        <p className="text-sm text-gray-400">Total: {testHistory.filter(t => t.type === 'Color Blindness Test').length} tests</p>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Normal Results:</span>
+                        <span className="text-green-400">100%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Last Test:</span>
+                        <span className="text-white">3 days ago</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-white/5 rounded-lg border border-white/10 p-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">Available Actions</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="text-center p-4 bg-gradient-to-br from-blue-500/10 to-purple-600/10 rounded-lg border border-blue-500/20">
+                      <Download className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                      <h4 className="font-medium text-white mb-1">Download Reports</h4>
+                      <p className="text-xs text-gray-400 mb-3">Get PDF copies of all your test results</p>
+                      <Button 
+                        onClick={generatePDF}
+                        disabled={downloadingPdf}
+                        size="sm" 
+                        variant="outline" 
+                        className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10"
+                      >
+                        {downloadingPdf ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Download className="w-4 h-4 mr-2" />
+                            Download PDF
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    
+                    <div className="text-center p-4 bg-gradient-to-br from-purple-500/10 to-pink-600/10 rounded-lg border border-purple-500/20">
+                      <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <span className="text-white text-sm font-bold">@</span>
+                      </div>
+                      <h4 className="font-medium text-white mb-1">Email Reports</h4>
+                      <p className="text-xs text-gray-400 mb-3">Send comprehensive report to your email</p>
+                      <EmailButton 
+                        type="comprehensive"
+                        variant="outline"
+                        size="sm"
+                        className="border-purple-500/50 text-purple-400 hover:bg-purple-500/10"
+                      >
+                        Send Email
+                      </EmailButton>
+                    </div>
+                    
+                    <div className="text-center p-4 bg-gradient-to-br from-green-500/10 to-emerald-600/10 rounded-lg border border-green-500/20">
+                      <TrendingUp className="w-8 h-8 text-green-400 mx-auto mb-2" />
+                      <h4 className="font-medium text-white mb-1">Health Trends</h4>
+                      <p className="text-xs text-gray-400 mb-3">View your health progress over time</p>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="border-green-500/50 text-green-400 hover:bg-green-500/10"
+                        onClick={() => setShowTrendsModal(true)}
+                      >
+                        View Trends
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      </div>
+      
+      {/* Health Trends Modal */}
+      <HealthTrendsModal 
+        isOpen={showTrendsModal}
+        onClose={() => setShowTrendsModal(false)}
+        testHistory={testHistory}
+      />
+    </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <ProtectedRoute>
+      <DashboardContent />
+    </ProtectedRoute>
+  )
+}

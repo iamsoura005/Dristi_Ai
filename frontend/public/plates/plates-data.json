@@ -1,0 +1,54 @@
+{
+  "plates": [
+    {
+      "id": 1,
+      "correctAnswer": "12",
+      "difficulty": "easy"
+    },
+    {
+      "id": 2,
+      "correctAnswer": "8",
+      "difficulty": "medium"
+    },
+    {
+      "id": 3,
+      "correctAnswer": "29",
+      "difficulty": "easy"
+    },
+    {
+      "id": 4,
+      "correctAnswer": "5",
+      "difficulty": "hard"
+    },
+    {
+      "id": 5,
+      "correctAnswer": "74",
+      "difficulty": "medium"
+    },
+    {
+      "id": 6,
+      "correctAnswer": "3",
+      "difficulty": "medium"
+    },
+    {
+      "id": 7,
+      "correctAnswer": "15",
+      "difficulty": "hard"
+    },
+    {
+      "id": 8,
+      "correctAnswer": "6",
+      "difficulty": "easy"
+    },
+    {
+      "id": 9,
+      "correctAnswer": "42",
+      "difficulty": "medium"
+    },
+    {
+      "id": 10,
+      "correctAnswer": "97",
+      "difficulty": "hard"
+    }
+  ]
+}

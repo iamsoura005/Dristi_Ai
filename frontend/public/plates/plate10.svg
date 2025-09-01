@@ -1,0 +1,67 @@
+<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="noise" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+      <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.5 0" />
+    </filter>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="200" cy="200" r="180" fill="#f0f0e0" />
+  
+  <!-- Background dots -->
+  <g>
+    <!-- Generate 1000 background dots with brown/tan colors -->
+    <script type="text/javascript">
+      <![CDATA[
+      const svgNS = "http://www.w3.org/2000/svg";
+      
+      // Background dots - brown/tan shades
+      const bgColors = [
+        "#8b4513", "#a0522d", "#cd853f", "#d2691e", 
+        "#deb887", "#f5deb3", "#d2b48c", "#bc8f8f",
+        "#f4a460", "#daa520", "#b8860b", "#cd5c5c"
+      ];
+      
+      // Number dots - green shades
+      const numColors = [
+        "#006400", "#008000", "#228b22", "#32cd32",
+        "#00ff00", "#7fff00", "#7cfc00", "#adff2f",
+        "#9acd32", "#6b8e23", "#556b2f", "#66cdaa"
+      ];
+      
+      // Create background dots
+      for (let i = 0; i < 1000; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.random() * 170;
+        const x = 200 + radius * Math.cos(angle);
+        const y = 200 + radius * Math.sin(angle);
+        const size = 2 + Math.random() * 6;
+        
+        // Check if dot should be part of the number 97
+        const isNumber = 
+          // Number 9
+          (x > 120 && x < 180 && y > 120 && y < 150) ||
+          (x > 120 && x < 180 && y > 190 && y < 220) ||
+          (x > 160 && x < 180 && y > 150 && y < 190) ||
+          (x > 160 && x < 180 && y > 220 && y < 280) ||
+          // Number 7
+          (x > 220 && x < 280 && y > 120 && y < 150) ||
+          (x > 260 && x < 280 && y > 150 && y < 280);
+        
+        const color = isNumber ? 
+          numColors[Math.floor(Math.random() * numColors.length)] : 
+          bgColors[Math.floor(Math.random() * bgColors.length)];
+        
+        const circle = document.createElementNS(svgNS, "circle");
+        circle.setAttribute("cx", x);
+        circle.setAttribute("cy", y);
+        circle.setAttribute("r", size);
+        circle.setAttribute("fill", color);
+        circle.setAttribute("opacity", 0.8 + Math.random() * 0.2);
+        document.querySelector("g").appendChild(circle);
+      }
+      ]]>
+    </script>
+  </g>
+</svg>
