@@ -18,6 +18,9 @@ interface IshiharaPlateProps {
 }
 
 function IshiharaPlate({ plateId, correctAnswer, size }: IshiharaPlateProps) {
+  const [imageLoaded, setImageLoaded] = useState(false)
+  const [imageError, setImageError] = useState(false)
+  
   return (
     <div 
       className="w-full h-full rounded-full relative overflow-hidden border-4 border-gray-600 bg-gray-100"
@@ -25,19 +28,44 @@ function IshiharaPlate({ plateId, correctAnswer, size }: IshiharaPlateProps) {
     >
       {/* Use actual Ishihara plate images */}
       <div className="w-full h-full flex items-center justify-center">
+        {!imageLoaded && !imageError && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Loader2 className="w-8 h-8 animate-spin text-gray-500" />
+          </div>
+        )}
+        
+        {imageError && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+            <AlertTriangle className="w-8 h-8 text-red-500 mb-2" />
+            <div className="text-xs text-gray-600">
+              Image failed to load
+              <br />
+              Plate {plateId}
+            </div>
+          </div>
+        )}
+        
         <img
-          src={`/plates/plate${plateId}.svg`}
+          src={`/plates/plate${plateId}.svg?t=${Date.now()}`}
           alt={`Ishihara color blindness test plate ${plateId}`}
-          className="w-full h-full object-cover rounded-full"
+          className={`w-full h-full object-cover rounded-full transition-opacity duration-300 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
           style={{ 
             width: size - 8, 
             height: size - 8,
             objectFit: 'cover'
           }}
+          onLoad={() => {
+            console.log(`Plate ${plateId} loaded successfully`);
+            setImageLoaded(true);
+            setImageError(false);
+          }}
           onError={(e) => {
             console.error(`Failed to load plate image: /plates/plate${plateId}.svg`);
-            // Fallback to a placeholder if image fails to load
-            e.currentTarget.src = '/placeholder.svg';
+            console.error('Error details:', e);
+            setImageError(true);
+            setImageLoaded(false);
           }}
         />
       </div>
@@ -232,6 +260,27 @@ export default function ColorBlindnessTest() {
   // Analyze results with backend AI
   const analyzeWithBackend = async (allAnswers: UserAnswer[]) => {
     setIsAnalyzing(true)
+    
+    // Set a timeout to prevent hanging indefinitely
+    const timeoutId = setTimeout(() => {
+      console.log('Backend analysis timeout, falling back to local analysis')
+      setBackendResults({
+        color_vision_status: 'timeout',
+        accuracy: 0,
+        correct_answers: 0,
+        total_answers: 0,
+        error_pattern: [],
+        diagnosis: {
+          type: 'Analysis Timeout',
+          description: 'Backend analysis timed out. Using local assessment.',
+          severity: 'Unknown',
+          prevalence: 'N/A'
+        },
+        recommendations: ['Analysis service is temporarily unavailable. Results based on local assessment.']
+      })
+      setIsAnalyzing(false)
+    }, 5000) // 5 second timeout
+    
     try {
       // Prepare answers in the format expected by the backend
       const answersForBackend: { [key: string]: string } = {}
@@ -240,6 +289,7 @@ export default function ColorBlindnessTest() {
       })
 
       console.log('Sending answers to backend:', answersForBackend)
+      console.log('Backend URL:', 'http://localhost:5000/ishihara/test')
 
       const response = await fetch('http://localhost:5000/ishihara/test', {
         method: 'POST',
@@ -251,15 +301,54 @@ export default function ColorBlindnessTest() {
         })
       })
 
+      // Clear timeout if request succeeds
+      clearTimeout(timeoutId)
+      
+      console.log('Response status:', response.status)
+      console.log('Response ok:', response.ok)
+      
       if (response.ok) {
         const result = await response.json()
         console.log('Backend analysis result:', result)
         setBackendResults(result.test_results)
       } else {
-        console.error('Backend analysis failed:', response.statusText)
+        const errorText = await response.text()
+        console.error('Backend analysis failed:', response.statusText, errorText)
+        // Set a fallback result to prevent pending state
+        setBackendResults({
+          color_vision_status: 'error',
+          accuracy: 0,
+          correct_answers: 0,
+          total_answers: 0,
+          error_pattern: [],
+          diagnosis: {
+            type: 'Analysis Error',
+            description: 'Unable to analyze results. Using basic assessment.',
+            severity: 'Unknown',
+            prevalence: 'N/A'
+          },
+          recommendations: ['Please try the test again or consult an eye care professional.']
+        })
       }
     } catch (error) {
+      // Clear timeout on error
+      clearTimeout(timeoutId)
       console.error('Error analyzing with backend:', error)
+      // Set a fallback result to prevent pending state
+      setBackendResults({
+        color_vision_status: 'error',
+        accuracy: 0,
+        correct_answers: 0,
+        total_answers: 0,
+        error_pattern: [],
+        diagnosis: {
+          type: 'Connection Error',
+          description: 'Unable to connect to analysis service. Using basic assessment.',
+          severity: 'Unknown',
+          prevalence: 'N/A'
+        },
+        recommendations: ['Please check your internet connection and try again.']
+      })
     } finally {
       setIsAnalyzing(false)
     }
@@ -282,12 +371,15 @@ export default function ColorBlindnessTest() {
         case 'deuteranomaly':
         case 'tritanomaly':
           return { level: "Color Deficiency", color: "from-yellow-400 to-orange-500", icon: AlertTriangle }
+        case 'error':
+          // Fall through to manual analysis
+          break
         default:
           return { level: "Analysis Pending", color: "from-blue-400 to-purple-500", icon: CheckCircle }
       }
     }
     
-    // Fallback to simple analysis
+    // Manual/fallback analysis when backend is unavailable or returns error
     const correctAnswers = answers.filter(a => a.isCorrect).length
     const avgResponseTime = answers.reduce((acc, ans) => acc + ans.responseTime, 0) / answers.length
     

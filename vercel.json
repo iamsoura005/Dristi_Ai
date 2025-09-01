@@ -22,13 +22,15 @@
   ],
   "env": {
     "TF_CPP_MIN_LOG_LEVEL": "2",
-    "PYTHONPATH": "$PYTHONPATH:./backend"
+    "PYTHONPATH": "$PYTHONPATH:./backend",
+    "MODEL_URL": "https://huggingface.co/your-username/hackloop-eye-disease-model/resolve/main/eye_disease_model.h5"
   },
   "functions": {
     "api/index.py": {
-      "maxDuration": 30,
-      "memory": 1024
+      "maxDuration": 60,
+      "memory": 3008
     }
   },
-  "regions": ["iad1"]
+  "regions": ["iad1"],
+  "outputDirectory": "frontend/.next"
 }

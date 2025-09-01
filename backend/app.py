@@ -8,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from models import db, User, TestResult, UserRole
 from auth_routes import auth_bp
 from email_service import init_mail, send_test_results_email, send_welcome_email, send_comprehensive_report
-from explainable_ai import GradCAMExplainer, generate_multi_class_explanation, generate_medical_interpretation
+# from explainable_ai import GradCAMExplainer, generate_multi_class_explanation, generate_medical_interpretation
 import tensorflow as tf
 from PIL import Image
 import io
@@ -18,7 +18,6 @@ from dotenv import load_dotenv
 
 # For the AI chatbot
 import re
-from openai import OpenAI
 import openai
 
 # Load environment variables
@@ -51,6 +50,7 @@ allowed_origins = [
     "http://localhost:3000", 
     "http://localhost:3001", 
     "http://localhost:3002",
+    "http://localhost:3003",
     "https://vercel.app",
     "https://*.vercel.app"
 ]
@@ -911,13 +911,12 @@ Guidelines:
             print(f"📝 Generating response for query: {query}")
             print(f"📄 System prompt length: {len(system_prompt)} characters")
             
-            # Use the new OpenAI client format with OpenRouter and DeepSeek
-            client = OpenAI(
-                api_key=OPENROUTER_API_KEY,
-                base_url="https://openrouter.ai/api/v1"
-            )
+            # Use the older OpenAI client format for compatibility with openai==1.3.0
+            import openai
+            openai.api_key = OPENROUTER_API_KEY
+            openai.api_base = "https://openrouter.ai/api/v1"
             
-            response = client.chat.completions.create(
+            response = openai.ChatCompletion.create(
                 model="deepseek/deepseek-chat",
                 messages=[
                     {"role": "system", "content": system_prompt},
