@@ -1,0 +1,1 @@
+{"class_names": ["cataract", "diabetic_retinopathy", "glaucoma", "normal"], "class_indices": {"cataract": 0, "diabetic_retinopathy": 1, "glaucoma": 2, "normal": 3}, "num_classes": 4, "image_size": [224, 224]}

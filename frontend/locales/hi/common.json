@@ -1,0 +1,262 @@
+{
+  "app": {
+    "name": "दृष्टि AI",
+    "tagline": "उन्नत नेत्र स्वास्थ्य विश्लेषण",
+    "description": "AI-संचालित नेत्र रोग का पता लगाना और व्यापक नेत्र स्वास्थ्य प्रबंधन"
+  },
+  "navigation": {
+    "home": "होम",
+    "features": "सुविधाएं",
+    "analyze": "विश्लेषण",
+    "dashboard": "डैशबोर्ड",
+    "family": "परिवार",
+    "doctors": "डॉक्टर खोजें",
+    "appointments": "अपॉइंटमेंट",
+    "profile": "प्रोफाइल",
+    "settings": "सेटिंग्स",
+    "logout": "लॉगआउट",
+    "login": "लॉगिन",
+    "register": "रजिस्टर"
+  },
+  "auth": {
+    "login": {
+      "title": "अपने खाते में लॉगिन करें",
+      "email": "ईमेल पता",
+      "password": "पासवर्ड",
+      "submit": "साइन इन",
+      "forgot_password": "पासवर्ड भूल गए?",
+      "no_account": "खाता नहीं है?",
+      "register_link": "यहाँ रजिस्टर करें"
+    },
+    "register": {
+      "title": "अपना खाता बनाएं",
+      "first_name": "पहला नाम",
+      "last_name": "अंतिम नाम",
+      "email": "ईमेल पता",
+      "password": "पासवर्ड",
+      "confirm_password": "पासवर्ड की पुष्टि करें",
+      "phone": "फोन नंबर",
+      "date_of_birth": "जन्म तिथि",
+      "gender": "लिंग",
+      "submit": "खाता बनाएं",
+      "have_account": "पहले से खाता है?",
+      "login_link": "यहाँ लॉगिन करें"
+    },
+    "errors": {
+      "invalid_credentials": "अमान्य ईमेल या पासवर्ड",
+      "email_exists": "ईमेल पहले से पंजीकृत है",
+      "password_mismatch": "पासवर्ड मेल नहीं खाते",
+      "required_field": "यह फील्ड आवश्यक है"
+    }
+  },
+  "dashboard": {
+    "welcome": "वापसी पर स्वागत है",
+    "recent_analyses": "हाल के विश्लेषण",
+    "family_health": "पारिवारिक स्वास्थ्य अवलोकन",
+    "upcoming_appointments": "आगामी अपॉइंटमेंट",
+    "health_insights": "स्वास्थ्य अंतर्दृष्टि",
+    "quick_actions": "त्वरित कार्य",
+    "upload_image": "आंख की छवि अपलोड करें",
+    "book_appointment": "अपॉइंटमेंट बुक करें",
+    "add_family_member": "परिवारी सदस्य जोड़ें",
+    "view_history": "इतिहास देखें"
+  },
+  "analysis": {
+    "title": "AI नेत्र रोग विश्लेषण",
+    "upload": {
+      "title": "आंख की छवि अपलोड करें",
+      "description": "AI विश्लेषण के लिए अपनी आंख की स्पष्ट छवि अपलोड करें",
+      "drag_drop": "अपनी छवि यहाँ खींचें और छोड़ें, या चुनने के लिए क्लिक करें",
+      "file_types": "समर्थित प्रारूप: PNG, JPG, JPEG, GIF",
+      "max_size": "अधिकतम फाइल आकार: 16MB",
+      "analyzing": "छवि का विश्लेषण कर रहे हैं...",
+      "please_wait": "कृपया प्रतीक्षा करें जब तक हम आपकी छवि का विश्लेषण करते हैं"
+    },
+    "results": {
+      "title": "विश्लेषण परिणाम",
+      "condition": "पहचानी गई स्थिति",
+      "confidence": "विश्वास स्कोर",
+      "recommendations": "सिफारिशें",
+      "follow_up": "फॉलो-अप आवश्यक",
+      "save_results": "परिणाम सहेजें",
+      "share_results": "परिणाम साझा करें",
+      "book_consultation": "परामर्श बुक करें"
+    },
+    "conditions": {
+      "normal": "सामान्य/स्वस्थ",
+      "diabetic_retinopathy": "मधुमेह संबंधी रेटिनोपैथी",
+      "glaucoma": "ग्लूकोमा",
+      "cataract": "मोतियाबिंद",
+      "age_related_macular_degeneration": "उम्र संबंधी मैक्यूलर डिजेनेरेशन",
+      "hypertensive_retinopathy": "उच्च रक्तचाप संबंधी रेटिनोपैथी"
+    }
+  },
+  "family": {
+    "title": "पारिवारिक स्वास्थ्य प्रबंधन",
+    "add_member": "परिवारी सदस्य जोड़ें",
+    "members": "परिवारी सदस्य",
+    "relationship": "रिश्ता",
+    "health_summary": "स्वास्थ्य सारांश",
+    "recent_tests": "हाल के परीक्षण",
+    "relationships": {
+      "self": "स्वयं",
+      "spouse": "पति/पत्नी",
+      "child": "बच्चा",
+      "parent": "माता-पिता",
+      "sibling": "भाई-बहन",
+      "grandparent": "दादा-दादी/नाना-नानी",
+      "grandchild": "पोता-पोती/नाती-नातिन",
+      "other": "अन्य"
+    },
+    "add_form": {
+      "name": "पूरा नाम",
+      "relationship": "रिश्ता",
+      "date_of_birth": "जन्म तिथि",
+      "gender": "लिंग",
+      "phone": "फोन नंबर",
+      "medical_conditions": "चिकित्सा स्थितियां",
+      "submit": "सदस्य जोड़ें"
+    }
+  },
+  "doctors": {
+    "title": "डॉक्टर और अस्पताल खोजें",
+    "search": {
+      "location": "आपका स्थान",
+      "radius": "खोज त्रिज्या",
+      "specialty": "विशेषता",
+      "search_button": "खोजें",
+      "use_current_location": "वर्तमान स्थान का उपयोग करें"
+    },
+    "filters": {
+      "sort_by": "इसके अनुसार क्रमबद्ध करें",
+      "distance": "दूरी",
+      "rating": "रेटिंग",
+      "experience": "अनुभव",
+      "consultation_fee": "परामर्श शुल्क",
+      "availability": "उपलब्धता"
+    },
+    "results": {
+      "found": "डॉक्टर मिले",
+      "distance_away": "दूर",
+      "rating": "रेटिंग",
+      "experience": "साल का अनुभव",
+      "consultation_fee": "परामर्श शुल्क",
+      "view_profile": "प्रोफाइल देखें",
+      "book_appointment": "अपॉइंटमेंट बुक करें",
+      "get_directions": "दिशा-निर्देश प्राप्त करें",
+      "call_now": "अभी कॉल करें"
+    },
+    "profile": {
+      "about": "के बारे में",
+      "qualifications": "योग्यताएं",
+      "specializations": "विशेषज्ञताएं",
+      "services": "प्रदान की जाने वाली सेवाएं",
+      "clinic_info": "क्लिनिक की जानकारी",
+      "reviews": "समीक्षाएं",
+      "availability": "उपलब्धता"
+    }
+  },
+  "appointments": {
+    "title": "अपॉइंटमेंट",
+    "book": {
+      "title": "अपॉइंटमेंट बुक करें",
+      "doctor": "डॉक्टर चुनें",
+      "date": "अपॉइंटमेंट की तारीख",
+      "time": "अपॉइंटमेंट का समय",
+      "type": "परामर्श प्रकार",
+      "reason": "मुलाकात का कारण",
+      "family_member": "परिवारी सदस्य के लिए",
+      "submit": "अपॉइंटमेंट बुक करें"
+    },
+    "types": {
+      "in_person": "व्यक्तिगत",
+      "video_call": "वीडियो कॉल",
+      "phone_call": "फोन कॉल"
+    },
+    "status": {
+      "scheduled": "निर्धारित",
+      "confirmed": "पुष्ट",
+      "in_progress": "प्रगति में",
+      "completed": "पूर्ण",
+      "cancelled": "रद्द"
+    },
+    "upcoming": "आगामी अपॉइंटमेंट",
+    "past": "पिछले अपॉइंटमेंट",
+    "reschedule": "पुनर्निर्धारण",
+    "cancel": "रद्द करें",
+    "join_call": "वीडियो कॉल में शामिल हों"
+  },
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "error": "त्रुटि",
+    "success": "सफलता",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं",
+    "edit": "संपादित करें",
+    "view": "देखें",
+    "download": "डाउनलोड",
+    "upload": "अपलोड",
+    "search": "खोजें",
+    "filter": "फिल्टर",
+    "sort": "क्रमबद्ध करें",
+    "next": "अगला",
+    "previous": "पिछला",
+    "close": "बंद करें",
+    "confirm": "पुष्टि करें",
+    "yes": "हाँ",
+    "no": "नहीं",
+    "male": "पुरुष",
+    "female": "महिला",
+    "other": "अन्य",
+    "optional": "वैकल्पिक",
+    "required": "आवश्यक"
+  },
+  "voice": {
+    "commands": {
+      "find_doctors": "मेरे पास नेत्र चिकित्सक खोजें",
+      "book_appointment": "डॉक्टर के साथ अपॉइंटमेंट बुक करें",
+      "check_results": "मेरे अंतिम नेत्र परीक्षण के परिणाम जांचें",
+      "add_family": "परिवारी सदस्य जोड़ें",
+      "switch_language": "हिंदी में बदलें"
+    },
+    "listening": "सुन रहे हैं...",
+    "not_supported": "इस ब्राउज़र में वॉयस कमांड समर्थित नहीं है",
+    "permission_denied": "माइक्रोफोन की अनुमति अस्वीकृत",
+    "speak_now": "अब बोलें"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "language": "भाषा",
+    "notifications": "सूचनाएं",
+    "privacy": "गोपनीयता",
+    "account": "खाता",
+    "about": "के बारे में",
+    "change_language": "भाषा बदलें",
+    "current_language": "वर्तमान भाषा",
+    "select_language": "भाषा चुनें"
+  },
+  "notifications": {
+    "appointment_reminder": "अपॉइंटमेंट रिमाइंडर",
+    "test_results_ready": "परीक्षण परिणाम तैयार हैं",
+    "family_member_added": "परिवारी सदस्य सफलतापूर्वक जोड़ा गया",
+    "analysis_complete": "विश्लेषण पूर्ण",
+    "booking_confirmed": "अपॉइंटमेंट बुकिंग की पुष्टि"
+  },
+  "errors": {
+    "network_error": "नेटवर्क त्रुटि। कृपया अपना कनेक्शन जांचें।",
+    "server_error": "सर्वर त्रुटि। कृपया बाद में पुनः प्रयास करें।",
+    "file_too_large": "फाइल बहुत बड़ी है। अधिकतम आकार 16MB है।",
+    "invalid_file_type": "अमान्य फाइल प्रकार। कृपया एक छवि अपलोड करें।",
+    "location_permission_denied": "स्थान की अनुमति अस्वीकृत",
+    "camera_permission_denied": "कैमरा की अनुमति अस्वीकृत",
+    "microphone_permission_denied": "माइक्रोफोन की अनुमति अस्वीकृत"
+  },
+  "success": {
+    "analysis_saved": "विश्लेषण परिणाम सफलतापूर्वक सहेजे गए",
+    "appointment_booked": "अपॉइंटमेंट सफलतापूर्वक बुक किया गया",
+    "profile_updated": "प्रोफाइल सफलतापूर्वक अपडेट किया गया",
+    "family_member_added": "परिवारी सदस्य सफलतापूर्वक जोड़ा गया",
+    "settings_saved": "सेटिंग्स सफलतापूर्वक सहेजी गईं"
+  }
+}

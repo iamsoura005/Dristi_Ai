@@ -1,0 +1,14 @@
+{
+  "plates": [
+    { "id": 1, "correctAnswer": "12", "type": "screening", "difficulty": "easy" },
+    { "id": 2, "correctAnswer": "8", "type": "screening", "difficulty": "easy" },
+    { "id": 3, "correctAnswer": "6", "type": "screening", "difficulty": "medium" },
+    { "id": 4, "correctAnswer": "29", "type": "screening", "difficulty": "medium" },
+    { "id": 5, "correctAnswer": "57", "type": "screening", "difficulty": "hard" },
+    { "id": 6, "correctAnswer": "5", "type": "protan", "difficulty": "medium" },
+    { "id": 7, "correctAnswer": "3", "type": "deutan", "difficulty": "medium" },
+    { "id": 8, "correctAnswer": "15", "type": "tritan", "difficulty": "hard" },
+    { "id": 9, "correctAnswer": "74", "type": "general", "difficulty": "medium" },
+    { "id": 10, "correctAnswer": "2", "type": "hidden", "difficulty": "hard" }
+  ]
+}

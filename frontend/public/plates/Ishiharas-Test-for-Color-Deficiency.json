@@ -1,0 +1,178 @@
+{
+  "testName": "Ishihara Test for Color Deficiency",
+  "version": "1.0",
+  "description": "Comprehensive Ishihara color vision test with authentic plate specifications",
+  "totalPlates": 38,
+  "testPlates": [
+    {
+      "plateNumber": 1,
+      "correctAnswer": "12",
+      "normalVision": "12",
+      "colorBlindVision": "12",
+      "difficulty": "demonstration",
+      "description": "Demonstration plate - everyone should see 12",
+      "backgroundColor": "mixed_brown_tan",
+      "numberColor": "green_dots",
+      "testType": "demonstration"
+    },
+    {
+      "plateNumber": 2,
+      "correctAnswer": "8",
+      "normalVision": "8",
+      "protanVision": "3",
+      "deutanVision": "3",
+      "difficulty": "easy",
+      "description": "Basic red-green deficiency test",
+      "backgroundColor": "orange_brown",
+      "numberColor": "green_dots",
+      "testType": "red_green_deficiency"
+    },
+    {
+      "plateNumber": 3,
+      "correctAnswer": "29",
+      "normalVision": "29",
+      "protanVision": "70",
+      "deutanVision": "70",
+      "difficulty": "easy",
+      "description": "Red-green deficiency detection",
+      "backgroundColor": "purple_violet",
+      "numberColor": "red_dots",
+      "testType": "red_green_deficiency"
+    },
+    {
+      "plateNumber": 4,
+      "correctAnswer": "5",
+      "normalVision": "5",
+      "protanVision": "2",
+      "deutanVision": "2",
+      "difficulty": "hard",
+      "description": "Advanced red sensitivity test",
+      "backgroundColor": "light_green",
+      "numberColor": "red_dots",
+      "testType": "protanopia_test"
+    },
+    {
+      "plateNumber": 5,
+      "correctAnswer": "74",
+      "normalVision": "74",
+      "protanVision": "21",
+      "deutanVision": "21",
+      "difficulty": "medium",
+      "description": "Red-green discrimination",
+      "backgroundColor": "yellow_orange",
+      "numberColor": "green_dots",
+      "testType": "red_green_deficiency"
+    },
+    {
+      "plateNumber": 6,
+      "correctAnswer": "3",
+      "normalVision": "3",
+      "protanVision": "5",
+      "deutanVision": "5",
+      "difficulty": "medium",
+      "description": "Moderate color discrimination",
+      "backgroundColor": "blue_purple",
+      "numberColor": "orange_dots",
+      "testType": "red_green_deficiency"
+    },
+    {
+      "plateNumber": 7,
+      "correctAnswer": "15",
+      "normalVision": "15",
+      "protanVision": "17",
+      "deutanVision": "17",
+      "difficulty": "hard",
+      "description": "Advanced discrimination test",
+      "backgroundColor": "pink_rose",
+      "numberColor": "green_dots",
+      "testType": "severe_deficiency"
+    },
+    {
+      "plateNumber": 8,
+      "correctAnswer": "6",
+      "normalVision": "6",
+      "protanVision": "unclear",
+      "deutanVision": "unclear",
+      "difficulty": "easy",
+      "description": "Basic number recognition",
+      "backgroundColor": "gray_silver",
+      "numberColor": "red_dots",
+      "testType": "red_green_deficiency"
+    },
+    {
+      "plateNumber": 9,
+      "correctAnswer": "42",
+      "normalVision": "42",
+      "protanVision": "2",
+      "deutanVision": "4",
+      "difficulty": "medium",
+      "description": "Differential diagnosis",
+      "backgroundColor": "mixed_colors",
+      "numberColor": "contrasting_dots",
+      "testType": "protanopia_deuteranopia_diff"
+    },
+    {
+      "plateNumber": 10,
+      "correctAnswer": "97",
+      "normalVision": "97",
+      "protanVision": "unclear",
+      "deutanVision": "unclear",
+      "difficulty": "hard",
+      "description": "Advanced color vision test",
+      "backgroundColor": "complex_pattern",
+      "numberColor": "subtle_contrast",
+      "testType": "severe_deficiency"
+    }
+  ],
+  "colorDeficiencyTypes": {
+    "normal": {
+      "description": "Normal color vision (trichromacy)",
+      "frequency": "92% of males, 99.5% of females",
+      "characteristics": "Can distinguish all colors correctly"
+    },
+    "protanopia": {
+      "description": "Red color blindness (missing L-cones)",
+      "frequency": "1% of males, 0.02% of females",
+      "characteristics": "Cannot distinguish red from green, red appears darker"
+    },
+    "deuteranopia": {
+      "description": "Green color blindness (missing M-cones)",
+      "frequency": "1% of males, 0.02% of females", 
+      "characteristics": "Cannot distinguish red from green, most common type"
+    },
+    "tritanopia": {
+      "description": "Blue color blindness (missing S-cones)",
+      "frequency": "0.002% of population",
+      "characteristics": "Cannot distinguish blue from yellow, very rare"
+    },
+    "protanomaly": {
+      "description": "Reduced red sensitivity (anomalous L-cones)",
+      "frequency": "1% of males, 0.02% of females",
+      "characteristics": "Mild difficulty with red discrimination"
+    },
+    "deuteranomaly": {
+      "description": "Reduced green sensitivity (anomalous M-cones)",
+      "frequency": "5% of males, 0.4% of females",
+      "characteristics": "Mild difficulty with green discrimination"
+    },
+    "tritanomaly": {
+      "description": "Reduced blue sensitivity (anomalous S-cones)",
+      "frequency": "0.01% of population",
+      "characteristics": "Mild difficulty with blue discrimination"
+    }
+  },
+  "testingInstructions": {
+    "setup": "View plates in bright, natural daylight if possible",
+    "distance": "Hold plates approximately 30 inches (75 cm) from eyes",
+    "timing": "Allow maximum 30 seconds per plate",
+    "environment": "Ensure adequate lighting without glare",
+    "limitations": "This is a screening tool, not a definitive diagnosis"
+  },
+  "scoringGuidelines": {
+    "normal": "8-10 correct answers indicate normal color vision",
+    "mild_deficiency": "5-7 correct answers suggest mild color deficiency",
+    "moderate_deficiency": "3-4 correct answers indicate moderate deficiency",
+    "severe_deficiency": "0-2 correct answers suggest severe color blindness"
+  },
+  "medicalDisclaimer": "This test is for screening purposes only. Professional evaluation by an eye care specialist is recommended for definitive diagnosis and management of color vision deficiencies."
+}

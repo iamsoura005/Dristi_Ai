@@ -1,0 +1,201 @@
+# Python cache and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+*.so
+
+# Node modules and package managers
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+frontend/node_modules/
+
+# Next.js build outputs and cache
+.next/
+out/
+frontend/.next/
+frontend/out/
+frontend/.next/cache/
+.next/cache/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+instance/
+
+# Large model files (CRITICAL FOR VERCEL SIZE LIMIT)
+*.h5
+*.pkl
+*.joblib
+backend/eye_disease_model.h5
+eye_disease_model.h5
+ishihara_model.h5
+backend/ishihara_model.h5
+
+# Large binary files
+*.wasm
+*.dll
+*.so
+*.dylib
+
+# Large media files
+*.mp4
+*.avi
+*.mov
+*.pdf
+*.zip
+*.tar.gz
+Ishihara_Tests.pdf
+eye.mp4.mp4
+
+# Development tools and repositories
+SWE-agent/
+.git/
+.gitignore
+
+# Documentation files (exclude most to reduce size)
+*.md
+!README.md
+EMAIL_*.md
+EXPLAINABLE_AI_IMPLEMENTATION.md
+VERCEL_CHECKLIST.md
+DEPLOYMENT_GUIDE.md
+DEPLOYMENT_OPTIMIZATION.md
+
+# Test files
+test_*.py
+*_test.py
+tests/
+backend/test_*.py
+
+# Build and config files not needed in production
+jsrepo-build-config.json
+tailwind.config.js
+frontend/tsconfig.json
+frontend/components.json
+
+# Backend application (we use serverless API instead)
+backend/app.py
+backend/app_auth_only.py
+backend/auth_routes.py
+backend/models.py
+backend/email_service.py
+backend/explainable_ai.py
+backend/requirements.txt
+
+# Backend cache
+backend/__pycache__/
+backend/*.pyc
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Package managers
+package-lock.json
+frontend/package-lock.json
+
+# Development scripts
+run.bat
+run.ps1
+start.cmd
+# Vercel ignore patterns
+# Don't upload these files to Vercel
+
+# Development files
+node_modules/
+.git/
+.env*
+!.env.example
+
+# Build artifacts
+frontend/.next/
+frontend/out/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Documentation
+*.md
+!README.md
+
+# Scripts
+*.bat
+*.sh
+*.ps1
+!deploy.ps1
+
+# Large files
+*.h5
+*.model
+*.pkl

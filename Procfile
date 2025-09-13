@@ -1,0 +1,1 @@
+web: /opt/venv/bin/gunicorn --bind 0.0.0.0:$PORT --chdir backend app:app --timeout 300 --workers 1 --threads 2

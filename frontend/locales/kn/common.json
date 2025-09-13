@@ -1,0 +1,262 @@
+{
+  "app": {
+    "name": "Dristi AI",
+    "tagline": "Advanced Eye Health Analysis",
+    "description": "AI-powered eye disease detection and comprehensive eye health management"
+  },
+  "navigation": {
+    "home": "Home",
+    "features": "Features",
+    "analyze": "Analyze",
+    "dashboard": "Dashboard",
+    "family": "Family",
+    "doctors": "Find Doctors",
+    "appointments": "Appointments",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Register"
+  },
+  "auth": {
+    "login": {
+      "title": "Login to Your Account",
+      "email": "Email Address",
+      "password": "Password",
+      "submit": "Sign In",
+      "forgot_password": "Forgot Password?",
+      "no_account": "Don't have an account?",
+      "register_link": "Register here"
+    },
+    "register": {
+      "title": "Create Your Account",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "email": "Email Address",
+      "password": "Password",
+      "confirm_password": "Confirm Password",
+      "phone": "Phone Number",
+      "date_of_birth": "Date of Birth",
+      "gender": "Gender",
+      "submit": "Create Account",
+      "have_account": "Already have an account?",
+      "login_link": "Login here"
+    },
+    "errors": {
+      "invalid_credentials": "Invalid email or password",
+      "email_exists": "Email already registered",
+      "password_mismatch": "Passwords do not match",
+      "required_field": "This field is required"
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome back",
+    "recent_analyses": "Recent Analyses",
+    "family_health": "Family Health Overview",
+    "upcoming_appointments": "Upcoming Appointments",
+    "health_insights": "Health Insights",
+    "quick_actions": "Quick Actions",
+    "upload_image": "Upload Eye Image",
+    "book_appointment": "Book Appointment",
+    "add_family_member": "Add Family Member",
+    "view_history": "View History"
+  },
+  "analysis": {
+    "title": "AI Eye Disease Analysis",
+    "upload": {
+      "title": "Upload Eye Image",
+      "description": "Upload a clear image of your eye for AI analysis",
+      "drag_drop": "Drag and drop your image here, or click to select",
+      "file_types": "Supported formats: PNG, JPG, JPEG, GIF",
+      "max_size": "Maximum file size: 16MB",
+      "analyzing": "Analyzing image...",
+      "please_wait": "Please wait while we analyze your image"
+    },
+    "results": {
+      "title": "Analysis Results",
+      "condition": "Detected Condition",
+      "confidence": "Confidence Score",
+      "recommendations": "Recommendations",
+      "follow_up": "Follow-up Required",
+      "save_results": "Save Results",
+      "share_results": "Share Results",
+      "book_consultation": "Book Consultation"
+    },
+    "conditions": {
+      "normal": "Normal/Healthy",
+      "diabetic_retinopathy": "Diabetic Retinopathy",
+      "glaucoma": "Glaucoma",
+      "cataract": "Cataract",
+      "age_related_macular_degeneration": "Age-Related Macular Degeneration",
+      "hypertensive_retinopathy": "Hypertensive Retinopathy"
+    }
+  },
+  "family": {
+    "title": "Family Health Management",
+    "add_member": "Add Family Member",
+    "members": "Family Members",
+    "relationship": "Relationship",
+    "health_summary": "Health Summary",
+    "recent_tests": "Recent Tests",
+    "relationships": {
+      "self": "Self",
+      "spouse": "Spouse",
+      "child": "Child",
+      "parent": "Parent",
+      "sibling": "Sibling",
+      "grandparent": "Grandparent",
+      "grandchild": "Grandchild",
+      "other": "Other"
+    },
+    "add_form": {
+      "name": "Full Name",
+      "relationship": "Relationship",
+      "date_of_birth": "Date of Birth",
+      "gender": "Gender",
+      "phone": "Phone Number",
+      "medical_conditions": "Medical Conditions",
+      "submit": "Add Member"
+    }
+  },
+  "doctors": {
+    "title": "Find Doctors & Hospitals",
+    "search": {
+      "location": "Your Location",
+      "radius": "Search Radius",
+      "specialty": "Specialty",
+      "search_button": "Search",
+      "use_current_location": "Use Current Location"
+    },
+    "filters": {
+      "sort_by": "Sort By",
+      "distance": "Distance",
+      "rating": "Rating",
+      "experience": "Experience",
+      "consultation_fee": "Consultation Fee",
+      "availability": "Availability"
+    },
+    "results": {
+      "found": "doctors found",
+      "distance_away": "away",
+      "rating": "Rating",
+      "experience": "years experience",
+      "consultation_fee": "Consultation Fee",
+      "view_profile": "View Profile",
+      "book_appointment": "Book Appointment",
+      "get_directions": "Get Directions",
+      "call_now": "Call Now"
+    },
+    "profile": {
+      "about": "About",
+      "qualifications": "Qualifications",
+      "specializations": "Specializations",
+      "services": "Services Offered",
+      "clinic_info": "Clinic Information",
+      "reviews": "Reviews",
+      "availability": "Availability"
+    }
+  },
+  "appointments": {
+    "title": "Appointments",
+    "book": {
+      "title": "Book Appointment",
+      "doctor": "Select Doctor",
+      "date": "Appointment Date",
+      "time": "Appointment Time",
+      "type": "Consultation Type",
+      "reason": "Reason for Visit",
+      "family_member": "For Family Member",
+      "submit": "Book Appointment"
+    },
+    "types": {
+      "in_person": "In-Person",
+      "video_call": "Video Call",
+      "phone_call": "Phone Call"
+    },
+    "status": {
+      "scheduled": "Scheduled",
+      "confirmed": "Confirmed",
+      "in_progress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "upcoming": "Upcoming Appointments",
+    "past": "Past Appointments",
+    "reschedule": "Reschedule",
+    "cancel": "Cancel",
+    "join_call": "Join Video Call"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "download": "Download",
+    "upload": "Upload",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "optional": "Optional",
+    "required": "Required"
+  },
+  "voice": {
+    "commands": {
+      "find_doctors": "Find eye doctors near me",
+      "book_appointment": "Book appointment with doctor",
+      "check_results": "Check my last eye test results",
+      "add_family": "Add family member",
+      "switch_language": "Switch to Hindi"
+    },
+    "listening": "Listening...",
+    "not_supported": "Voice commands not supported in this browser",
+    "permission_denied": "Microphone permission denied",
+    "speak_now": "Speak now"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "account": "Account",
+    "about": "About",
+    "change_language": "Change Language",
+    "current_language": "Current Language",
+    "select_language": "Select Language"
+  },
+  "notifications": {
+    "appointment_reminder": "Appointment reminder",
+    "test_results_ready": "Test results are ready",
+    "family_member_added": "Family member added successfully",
+    "analysis_complete": "Analysis completed",
+    "booking_confirmed": "Appointment booking confirmed"
+  },
+  "errors": {
+    "network_error": "Network error. Please check your connection.",
+    "server_error": "Server error. Please try again later.",
+    "file_too_large": "File is too large. Maximum size is 16MB.",
+    "invalid_file_type": "Invalid file type. Please upload an image.",
+    "location_permission_denied": "Location permission denied",
+    "camera_permission_denied": "Camera permission denied",
+    "microphone_permission_denied": "Microphone permission denied"
+  },
+  "success": {
+    "analysis_saved": "Analysis results saved successfully",
+    "appointment_booked": "Appointment booked successfully",
+    "profile_updated": "Profile updated successfully",
+    "family_member_added": "Family member added successfully",
+    "settings_saved": "Settings saved successfully"
+  }
+}

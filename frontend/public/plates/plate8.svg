@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <circle cx="200" cy="200" r="200" fill="#f5f5dc"/>
+  <g fill="#A0522D">
+    <!-- Background dots -->
+    <circle cx="120" cy="150" r="5"/>
+    <circle cx="140" cy="160" r="4"/>
+    <circle cx="160" cy="140" r="6"/>
+    <circle cx="180" cy="170" r="5"/>
+    <circle cx="200" cy="150" r="4"/>
+    <circle cx="220" cy="160" r="6"/>
+    <circle cx="240" cy="140" r="5"/>
+    <circle cx="260" cy="170" r="4"/>
+    <circle cx="280" cy="150" r="6"/>
+    <!-- More background dots -->
+    <circle cx="130" cy="190" r="5"/>
+    <circle cx="150" cy="200" r="4"/>
+    <circle cx="170" cy="180" r="6"/>
+    <circle cx="190" cy="210" r="5"/>
+    <circle cx="210" cy="190" r="4"/>
+    <circle cx="230" cy="200" r="6"/>
+    <circle cx="250" cy="180" r="5"/>
+    <circle cx="270" cy="210" r="4"/>
+    <circle cx="290" cy="190" r="6"/>
+    <!-- Even more background dots -->
+    <circle cx="120" cy="230" r="5"/>
+    <circle cx="140" cy="240" r="4"/>
+    <circle cx="160" cy="220" r="6"/>
+    <circle cx="180" cy="250" r="5"/>
+    <circle cx="200" cy="230" r="4"/>
+    <circle cx="220" cy="240" r="6"/>
+    <circle cx="240" cy="220" r="5"/>
+    <circle cx="260" cy="250" r="4"/>
+    <circle cx="280" cy="230" r="6"/>
+  </g>
+  <g fill="#00AA00">
+    <!-- Number 97 -->
+    <!-- Digit 9 -->
+    <circle cx="180" cy="180" r="5"/>
+    <circle cx="190" cy="180" r="5"/>
+    <circle cx="200" cy="180" r="5"/>
+    <circle cx="180" cy="190" r="5"/>
+    <circle cx="200" cy="190" r="5"/>
+    <circle cx="180" cy="200" r="5"/>
+    <circle cx="190" cy="200" r="5"/>
+    <circle cx="200" cy="200" r="5"/>
+    <circle cx="200" cy="210" r="5"/>
+    <circle cx="200" cy="220" r="5"/>
+    <!-- Digit 7 -->
+    <circle cx="220" cy="180" r="5"/>
+    <circle cx="230" cy="180" r="5"/>
+    <circle cx="240" cy="180" r="5"/>
+    <circle cx="240" cy="190" r="5"/>
+    <circle cx="240" cy="200" r="5"/>
+    <circle cx="240" cy="210" r="5"/>
+    <circle cx="240" cy="220" r="5"/>
+  </g>
+</svg>
