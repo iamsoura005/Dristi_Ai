@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { User, TestTube, Activity, Calendar, TrendingUp, Eye, Download, Clock, CheckCircle, Loader2 } from "lucide-react"
+import { User, TestTube, Activity, Calendar, TrendingUp, Eye, Download, Clock, CheckCircle, Loader2, Coins, UserPlus, BarChart3, ArrowRight } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { Button } from "@/components/ui/button"
 import { ProtectedRoute } from "@/components/auth/protected-route"
@@ -266,7 +266,79 @@ function DashboardContent() {
                     </div>
                   ))}
                 </div>
-                
+
+                {/* New Features Section */}
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold text-white mb-4">Platform Features</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Staking Card */}
+                    <motion.div
+                      whileHover={{ y: -5, scale: 1.02 }}
+                      className="glass-card rounded-xl p-6 group cursor-pointer"
+                      onClick={() => window.location.href = '/dashboard/staking'}
+                    >
+                      <div className="flex items-center space-x-4 mb-3">
+                        <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                          <Coins className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-lg font-bold text-white">Staking</div>
+                          <div className="text-sm text-gray-400">Earn rewards</div>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-300 mb-3">Stake your DRST tokens to earn passive rewards with competitive APY rates.</p>
+                      <div className="flex items-center text-blue-400 text-sm group-hover:text-blue-300 transition-colors">
+                        <span>Start Staking</span>
+                        <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </motion.div>
+
+                    {/* Referrals Card */}
+                    <motion.div
+                      whileHover={{ y: -5, scale: 1.02 }}
+                      className="glass-card rounded-xl p-6 group cursor-pointer"
+                      onClick={() => window.location.href = '/dashboard/referrals'}
+                    >
+                      <div className="flex items-center space-x-4 mb-3">
+                        <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
+                          <UserPlus className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-lg font-bold text-white">Referrals</div>
+                          <div className="text-sm text-gray-400">Invite friends</div>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-300 mb-3">Invite friends to join and earn rewards for successful referrals.</p>
+                      <div className="flex items-center text-blue-400 text-sm group-hover:text-blue-300 transition-colors">
+                        <span>View Program</span>
+                        <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </motion.div>
+
+                    {/* Analytics Card */}
+                    <motion.div
+                      whileHover={{ y: -5, scale: 1.02 }}
+                      className="glass-card rounded-xl p-6 group cursor-pointer"
+                      onClick={() => window.location.href = '/dashboard/analytics'}
+                    >
+                      <div className="flex items-center space-x-4 mb-3">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center">
+                          <BarChart3 className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-lg font-bold text-white">Analytics</div>
+                          <div className="text-sm text-gray-400">Health insights</div>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-300 mb-3">View detailed analytics and trends from your health test history.</p>
+                      <div className="flex items-center text-blue-400 text-sm group-hover:text-blue-300 transition-colors">
+                        <span>View Analytics</span>
+                        <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
+
                 <div className="flex space-x-4 pt-4">
                   <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
                     Take New Test

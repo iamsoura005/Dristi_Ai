@@ -4,7 +4,7 @@ Provides endpoints for location services and nearby doctor search
 """
 
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 from location_service import location_service
 from models import db, User
 

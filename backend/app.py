@@ -116,20 +116,23 @@ mail = init_mail(app)
 # Import additional route blueprints
 from family_routes import family_bp
 from location_routes import location_bp
-from consultation_routes import consultation_bp
-from prescription_routes import prescription_bp
-from security_routes import security_bp
-from performance_routes import performance_bp
+from blockchain_routes import blockchain_bp
+from wallet_auth_routes import wallet_bp  # Fresh wallet auth routes
+from staking_routes import staking_bp
+from referral_routes import referral_bp
+from analytics_routes import analytics_bp
+from reward_service import reward_service
 
 # Register blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(ai_bp)
 app.register_blueprint(family_bp)
 app.register_blueprint(location_bp)
-app.register_blueprint(consultation_bp)
-app.register_blueprint(prescription_bp)
-app.register_blueprint(security_bp)
-app.register_blueprint(performance_bp)
+app.register_blueprint(blockchain_bp, url_prefix='/api/blockchain')
+app.register_blueprint(wallet_bp)  # Fresh wallet auth routes at /api/wallet
+app.register_blueprint(staking_bp)
+app.register_blueprint(referral_bp)
+app.register_blueprint(analytics_bp)
 
 # Initialize class information
 class_info_path = os.path.join(os.path.dirname(__file__), 'class_info.json')
@@ -269,6 +272,14 @@ def handle_exception(e):
     # Log the error for debugging
     print(f"❌ Unhandled exception: {str(e)}")
     return jsonify({'error': f'Server error: {str(e)}'}), 500
+
+# Test wallet route directly in app.py
+@app.route('/test-wallet', methods=['GET'])
+def test_wallet_direct():
+    return jsonify({
+        'message': 'Direct wallet test route works!',
+        'status': 'success'
+    }), 200
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -1179,7 +1190,20 @@ def ishihara_color_test():
                 db.session.add(test_result)
                 db.session.commit()
                 print(f"✅ Ishihara test result saved for user {current_user_id}")
-                
+
+                # Award VisionCoins for completing the test
+                reward_result = reward_service.process_color_blindness_reward(
+                    current_user_id,
+                    results
+                )
+
+                if reward_result.get('success'):
+                    results['reward'] = {
+                        'amount': reward_result['amount'],
+                        'reason': reward_result['reason'],
+                        'new_balance': reward_result.get('new_balance', 0)
+                    }
+
                 # Send email notification if user has email
                 if user and user.email:
                     email_sent = send_test_results_email(
@@ -1698,4 +1722,4 @@ def fallback_chat_response(query):
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
-    app.run(debug=False, host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0', port=port)

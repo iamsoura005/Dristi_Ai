@@ -37,6 +37,42 @@ Thumbs.db
 *.h5
 *.pkl
 *.joblib
+*.model
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+backend/*.db
+backend/instance/
+
+# Blockchain private keys and sensitive data
+private_keys/
+*.key
+*.pem
+wallet_data/
+.env.blockchain
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Test files
+debug_*.py
+test_api.py
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.pkl
+*.joblib
 *.wasm
 *.dll
 backend/eye_disease_model.h5

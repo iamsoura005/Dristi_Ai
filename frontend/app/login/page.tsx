@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Eye, EyeOff, LogIn, Mail, Lock, ArrowRight, UserPlus } from "lucide-react"
+import { Eye, EyeOff, LogIn, Mail, Lock, ArrowRight, UserPlus, Wallet } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import MetaMaskAuth from "@/components/auth/MetaMaskAuth"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -70,8 +72,28 @@ export default function LoginPage() {
               <p className="text-gray-200">Sign in to your medical AI account</p>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Authentication Tabs */}
+            <Tabs defaultValue="wallet" className="w-full text-black">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="wallet" className="flex items-center gap-2 text-black">
+                  <Wallet className="w-4 h-4 text-black" />
+                  MetaMask
+                </TabsTrigger>
+                <TabsTrigger value="email" className="flex items-center gap-2 text-black">
+                  <Mail className="w-4 h-4 text-black" />
+                  Email
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="wallet" className="space-y-4 text-black">
+                <MetaMaskAuth
+                  onSuccess={() => router.push("/")}
+                  onError={(error) => setError(error)}
+                />
+              </TabsContent>
+
+              <TabsContent value="email" className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email Input */}
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium text-white">
@@ -149,7 +171,9 @@ export default function LoginPage() {
                   )}
                 </Button>
               </motion.div>
-            </form>
+                </form>
+              </TabsContent>
+            </Tabs>
 
             {/* Footer Links */}
             <div className="space-y-4">

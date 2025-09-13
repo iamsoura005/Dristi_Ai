@@ -4,10 +4,11 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, Eye, Brain, Users, Mail, TestTube, ArrowRight, Upload, LogIn, LogOut, User, Settings, Contrast, Type, Calculator } from "lucide-react"
+import { Menu, X, Eye, Brain, Users, Mail, TestTube, ArrowRight, Upload, LogIn, LogOut, User, Settings, Contrast, Type, Calculator, Coins, UserPlus, BarChart3, Wallet } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/auth/auth-provider"
 import { ThemeToggle } from "./theme-toggle"
+import WalletBalance from "@/components/wallet/WalletBalance"
 
 const navItems = [
   { href: "/", label: "Home", icon: Eye },
@@ -129,6 +130,9 @@ export function Navigation() {
               <>
                 {isAuthenticated ? (
                   <div className="flex items-center space-x-4">
+                    {/* Wallet Balance */}
+                    <WalletBalance />
+
                     {/* User Info */}
                     <div className="relative">
                       <button
@@ -177,7 +181,36 @@ export function Navigation() {
                                 <Settings className="w-4 h-4" />
                                 <span>Dashboard</span>
                               </Link>
-                              
+
+                              <Link
+                                href="/dashboard/staking"
+                                onClick={() => setShowUserMenu(false)}
+                                className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
+                              >
+                                <Coins className="w-4 h-4" />
+                                <span>Staking</span>
+                              </Link>
+
+                              <Link
+                                href="/dashboard/referrals"
+                                onClick={() => setShowUserMenu(false)}
+                                className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
+                              >
+                                <UserPlus className="w-4 h-4" />
+                                <span>Referrals</span>
+                              </Link>
+
+                              <Link
+                                href="/dashboard/analytics"
+                                onClick={() => setShowUserMenu(false)}
+                                className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
+                              >
+                                <BarChart3 className="w-4 h-4" />
+                                <span>Analytics</span>
+                              </Link>
+
+                              <div className="border-t border-white/10 my-2"></div>
+
                               <button
                                 onClick={handleLogout}
                                 className="w-full flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-red-500/20 text-gray-300 hover:text-red-400 transition-colors"

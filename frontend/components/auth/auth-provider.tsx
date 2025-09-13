@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { User, authService } from '@/lib/auth'
+import { metaMaskAuthService, WalletAuthResponse, ProfileData } from '@/lib/metamask-auth'
 
 interface AuthContextType {
   user: User | null
@@ -14,6 +15,8 @@ interface AuthContextType {
     last_name: string
     role?: 'patient' | 'doctor' | 'admin'
   }) => Promise<void>
+  loginWithWallet: () => Promise<WalletAuthResponse>
+  completeWalletProfile: (profileData: ProfileData) => Promise<void>
   logout: () => Promise<void>
   isAuthenticated: boolean
   hasRole: (role: 'patient' | 'doctor' | 'admin') => boolean
@@ -94,6 +97,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const loginWithWallet = async (): Promise<WalletAuthResponse> => {
+    setLoading(true)
+    try {
+      const walletAuthResponse = await metaMaskAuthService.authenticateWithWallet()
+
+      // Store token and set user
+      authService.setToken(walletAuthResponse.access_token)
+      authService.setUser(walletAuthResponse.user)
+      setUser(walletAuthResponse.user)
+
+      return walletAuthResponse
+    } catch (error) {
+      setUser(null)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const completeWalletProfile = async (profileData: ProfileData) => {
+    const token = authService.getToken()
+    if (!token) {
+      throw new Error('No authentication token found')
+    }
+
+    try {
+      const updatedUser = await metaMaskAuthService.completeProfile(profileData, token)
+      authService.setUser(updatedUser)
+      setUser(updatedUser)
+    } catch (error) {
+      throw error
+    }
+  }
+
   const logout = async () => {
     setLoading(true)
     try {
@@ -132,6 +169,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     login,
     register,
+    loginWithWallet,
+    completeWalletProfile,
     logout,
     isAuthenticated: !!user && authService.isAuthenticated(),
     hasRole,

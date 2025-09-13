@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Eye, EyeOff, UserPlus, Mail, Lock, User, Users, ArrowRight, LogIn } from "lucide-react"
+import { Eye, EyeOff, UserPlus, Mail, Lock, User, Users, ArrowRight, LogIn, Wallet } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/components/auth/auth-provider"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
+import MetaMaskAuth from "@/components/auth/MetaMaskAuth"
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -26,12 +28,39 @@ export default function RegisterPage() {
   
   const { register, isAuthenticated } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const [referralCode, setReferralCode] = useState<string | null>(null)
 
+  // Read referral code from URL and track click (no auth required)
   useEffect(() => {
-    if (isAuthenticated) {
+    const code = searchParams?.get("ref")
+    if (code) {
+      setReferralCode(code)
+      fetch("/api/referrals/track-click", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      }).catch(() => {})
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // When user becomes authenticated, attribute referral if a code exists
+  useEffect(() => {
+    const doAttr = async () => {
+      if (!isAuthenticated || !referralCode) return
+      try {
+        const token = localStorage.getItem("token") || localStorage.getItem("access_token")
+        await fetch("/api/referrals/register-attribution", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
+          body: JSON.stringify({ code: referralCode }),
+        })
+      } catch {}
       router.push("/")
     }
-  }, [isAuthenticated, router])
+    doAttr()
+  }, [isAuthenticated, referralCode, router])
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -123,8 +152,28 @@ export default function RegisterPage() {
               <p className="text-gray-200">Join our medical AI platform</p>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Registration Tabs */}
+            <Tabs defaultValue="wallet" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-black">
+                <TabsTrigger value="wallet" className="flex items-center gap-2">
+                  <Wallet className="w-4 h-4 text-black" />
+                  MetaMask
+                </TabsTrigger>
+                <TabsTrigger value="email" className="flex items-center gap-2 te-black">
+                  <Mail className="w-4 h-4" />
+                  Email
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="wallet" className="space-y-4">
+                <MetaMaskAuth
+                  onSuccess={() => router.push("/")}
+                  onError={(error) => setError(error)}
+                />
+              </TabsContent>
+
+              <TabsContent value="email" className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
               {/* Name Fields */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -295,7 +344,9 @@ export default function RegisterPage() {
                   )}
                 </Button>
               </motion.div>
-            </form>
+                </form>
+              </TabsContent>
+            </Tabs>
 
             {/* Footer Links */}
             <div className="space-y-4">

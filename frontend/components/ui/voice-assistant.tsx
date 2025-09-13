@@ -59,25 +59,25 @@ export function VoiceAssistant({
     },
     {
       command: 'find doctors|search doctors|doctors near me',
-      action: () => onNavigate?.('/doctors'),
+      action: () => onNavigate?('/doctors'),
       description: 'Find nearby doctors',
       category: 'navigation'
     },
     {
       command: 'analyze eye|eye analysis|upload image',
-      action: () => onNavigate?.('/analyze'),
+      action: () => onNavigate?('/analyze'),
       description: 'Go to eye analysis page',
       category: 'navigation'
     },
     {
       command: 'family members|family|add family',
-      action: () => onNavigate?.('/family'),
+      action: () => onNavigate?('/family'),
       description: 'Manage family members',
       category: 'navigation'
     },
     {
       command: 'appointments|my appointments|book appointment',
-      action: () => onNavigate?.('/appointments'),
+      action: () => onNavigate?('/appointments'),
       description: 'View or book appointments',
       category: 'navigation'
     },

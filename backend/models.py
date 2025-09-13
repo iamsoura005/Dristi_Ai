@@ -43,10 +43,11 @@ class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-    first_name = db.Column(db.String(80), nullable=False)
-    last_name = db.Column(db.String(80), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=True)  # Made nullable for wallet auth
+    password_hash = db.Column(db.String(128), nullable=True)  # Made nullable for wallet auth
+    wallet_address = db.Column(db.String(42), unique=True, nullable=True)  # Ethereum address
+    first_name = db.Column(db.String(80), nullable=True)  # Made nullable for wallet auth
+    last_name = db.Column(db.String(80), nullable=True)  # Made nullable for wallet auth
     phone = db.Column(db.String(20))
     date_of_birth = db.Column(db.Date)
     gender = db.Column(db.Enum(Gender))
@@ -58,9 +59,11 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime)
 
-    def __init__(self, email, password, first_name, last_name, role=UserRole.PATIENT, **kwargs):
+    def __init__(self, email=None, password=None, first_name=None, last_name=None, wallet_address=None, role=UserRole.PATIENT, **kwargs):
         self.email = email
-        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+        self.wallet_address = wallet_address
+        if password:
+            self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
         self.first_name = first_name
         self.last_name = last_name
         self.role = role
@@ -72,12 +75,15 @@ class User(db.Model):
         self.location_lng = kwargs.get('location_lng')
 
     def check_password(self, password):
+        if not self.password_hash:
+            return False
         return bcrypt.check_password_hash(self.password_hash, password)
 
     def to_dict(self):
         return {
             'id': self.id,
             'email': self.email,
+            'wallet_address': self.wallet_address,
             'first_name': self.first_name,
             'last_name': self.last_name,
             'phone': self.phone,
@@ -242,19 +248,9 @@ class Appointment(db.Model):
     status = db.Column(db.Enum(AppointmentStatus), default=AppointmentStatus.SCHEDULED)
     reason = db.Column(db.Text)
     notes = db.Column(db.Text)
-    doctor_notes = db.Column(db.Text)
-    patient_symptoms = db.Column(db.Text)
     consultation_fee = db.Column(db.Float)
-    duration_minutes = db.Column(db.Integer, default=30)
     video_call_link = db.Column(db.String(255))
-    video_room_id = db.Column(db.String(100))
-    meeting_password = db.Column(db.String(50))
     prescription_id = db.Column(db.Integer, db.ForeignKey('prescriptions.id'), nullable=True)
-    payment_status = db.Column(db.String(20), default='pending')
-    payment_id = db.Column(db.String(100))
-    reminder_sent = db.Column(db.Boolean, default=False)
-    follow_up_required = db.Column(db.Boolean, default=False)
-    follow_up_date = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -454,201 +450,200 @@ class VisionTest(db.Model):
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 
-# Doctor Availability Model
-class DoctorAvailability(db.Model):
-    __tablename__ = 'doctor_availability'
+class Wallet(db.Model):
+    """Crypto wallet model for storing encrypted wallet data"""
+    __tablename__ = 'wallets'
 
     id = db.Column(db.Integer, primary_key=True)
-    doctor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    day_of_week = db.Column(db.Integer, nullable=False)  # 0=Monday, 6=Sunday
-    start_time = db.Column(db.Time, nullable=False)
-    end_time = db.Column(db.Time, nullable=False)
-    is_available = db.Column(db.Boolean, default=True)
-    max_appointments = db.Column(db.Integer, default=10)
-    slot_duration = db.Column(db.Integer, default=30)  # minutes
-    break_start = db.Column(db.Time)
-    break_end = db.Column(db.Time)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
 
-    doctor = db.relationship('User', backref='availability_slots')
+    # Ethereum wallet
+    eth_address = db.Column(db.String(42), nullable=False)
+    encrypted_eth_private_key = db.Column(db.Text, nullable=False)
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'doctor_id': self.doctor_id,
-            'day_of_week': self.day_of_week,
-            'start_time': self.start_time.strftime('%H:%M') if self.start_time else None,
-            'end_time': self.end_time.strftime('%H:%M') if self.end_time else None,
-            'is_available': self.is_available,
-            'max_appointments': self.max_appointments,
-            'slot_duration': self.slot_duration,
-            'break_start': self.break_start.strftime('%H:%M') if self.break_start else None,
-            'break_end': self.break_end.strftime('%H:%M') if self.break_end else None
-        }
+    # Bitcoin wallet
+    btc_address = db.Column(db.String(62), nullable=True)
+    encrypted_btc_private_key = db.Column(db.Text, nullable=True)
 
-# Consultation Messages Model
-class ConsultationMessage(db.Model):
-    __tablename__ = 'consultation_messages'
+    # Encryption metadata
+    salt = db.Column(db.String(255), nullable=False)
+    encryption_method = db.Column(db.String(50), default='password')
 
-    id = db.Column(db.Integer, primary_key=True)
-    appointment_id = db.Column(db.Integer, db.ForeignKey('appointments.id'), nullable=False)
-    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    message_type = db.Column(db.String(20), default='text')  # text, image, file, voice
-    content = db.Column(db.Text, nullable=False)
-    file_url = db.Column(db.String(500))
-    file_name = db.Column(db.String(255))
-    file_size = db.Column(db.Integer)
-    is_read = db.Column(db.Boolean, default=False)
-    read_at = db.Column(db.DateTime)
-    is_encrypted = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    appointment = db.relationship('Appointment', backref='consultation_messages')
-    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_consultation_messages')
-    receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_consultation_messages')
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'appointment_id': self.appointment_id,
-            'sender_id': self.sender_id,
-            'receiver_id': self.receiver_id,
-            'message_type': self.message_type,
-            'content': self.content,
-            'file_url': self.file_url,
-            'file_name': self.file_name,
-            'file_size': self.file_size,
-            'is_read': self.is_read,
-            'read_at': self.read_at.isoformat() if self.read_at else None,
-            'created_at': self.created_at.isoformat() if self.created_at else None
-        }
-
-# Eye Prescription Model
-class EyePrescription(db.Model):
-    __tablename__ = 'eye_prescriptions'
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    family_member_id = db.Column(db.Integer, db.ForeignKey('family_members.id'), nullable=True)
-    doctor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    prescription_date = db.Column(db.DateTime, nullable=False)
-
-    # Right Eye (OD - Oculus Dexter)
-    od_sphere = db.Column(db.Float)  # Spherical power
-    od_cylinder = db.Column(db.Float)  # Cylindrical power
-    od_axis = db.Column(db.Integer)  # Axis (0-180 degrees)
-    od_add = db.Column(db.Float)  # Addition for bifocals/progressives
-    od_prism = db.Column(db.Float)  # Prism correction
-    od_base = db.Column(db.String(10))  # Prism base direction
-
-    # Left Eye (OS - Oculus Sinister)
-    os_sphere = db.Column(db.Float)
-    os_cylinder = db.Column(db.Float)
-    os_axis = db.Column(db.Integer)
-    os_add = db.Column(db.Float)
-    os_prism = db.Column(db.Float)
-    os_base = db.Column(db.String(10))
-
-    # Additional measurements
-    pupillary_distance = db.Column(db.Float)  # PD in mm
-    near_pd = db.Column(db.Float)  # Near PD for reading glasses
-    vertex_distance = db.Column(db.Float)  # Distance from lens to eye
-
-    # Prescription details
-    prescription_type = db.Column(db.String(20), default='glasses')  # glasses, contacts, both
-    lens_type = db.Column(db.String(50))  # single_vision, bifocal, progressive, etc.
-    lens_material = db.Column(db.String(50))  # plastic, polycarbonate, high_index, etc.
-    coating = db.Column(db.String(100))  # anti_reflective, blue_light, photochromic, etc.
-
-    # Metadata
-    prescription_source = db.Column(db.String(20), default='manual')  # manual, ocr, doctor
-    image_url = db.Column(db.String(500))  # Original prescription image
-    ocr_confidence = db.Column(db.Float)  # OCR extraction confidence
-    notes = db.Column(db.Text)
-    is_current = db.Column(db.Boolean, default=True)
-    expiry_date = db.Column(db.DateTime)
-
+    # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
-    user = db.relationship('User', foreign_keys=[user_id], backref='prescriptions')
-    family_member = db.relationship('FamilyMember', backref='prescriptions')
-    doctor = db.relationship('User', foreign_keys=[doctor_id], backref='issued_prescriptions')
+    user = db.relationship('User', backref=db.backref('wallet', uselist=False))
+
+    def __repr__(self):
+        return f'<Wallet {self.id} - User {self.user_id}>'
+
+class BlockchainTransaction(db.Model):
+    """Blockchain transaction history"""
+    __tablename__ = 'blockchain_transactions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    # Transaction details
+    tx_hash = db.Column(db.String(66), nullable=False)
+    tx_type = db.Column(db.String(20), nullable=False)  # ETH, BTC, DRST, VSC
+    amount = db.Column(db.Numeric(precision=18, scale=8), nullable=False)
+
+    # Addresses
+    from_address = db.Column(db.String(62), nullable=True)
+    to_address = db.Column(db.String(62), nullable=False)
+
+    # Status
+    status = db.Column(db.String(20), default='pending')  # pending, confirmed, failed
+    confirmations = db.Column(db.Integer, default=0)
+    block_number = db.Column(db.Integer, nullable=True)
+
+    # Metadata
+    gas_used = db.Column(db.Integer, nullable=True)
+    gas_price = db.Column(db.Numeric(precision=18, scale=8), nullable=True)
+    network = db.Column(db.String(20), default='testnet')
+
+    # Timestamps
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    confirmed_at = db.Column(db.DateTime, nullable=True)
+
+    # Relationships
+    user = db.relationship('User', backref='blockchain_transactions')
+
+    def __repr__(self):
+        return f'<BlockchainTransaction {self.tx_hash[:10]}...>'
+
+class HealthRecord(db.Model):
+    """Health records stored on blockchain"""
+    __tablename__ = 'health_records'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    # Blockchain data
+    record_id = db.Column(db.Integer, nullable=False)  # On-chain record ID
+    ipfs_hash = db.Column(db.String(100), nullable=False)
+    tx_hash = db.Column(db.String(66), nullable=False)
+
+    # Record metadata
+    record_type = db.Column(db.String(50), nullable=False)
+    title = db.Column(db.String(200), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+
+    # Status
+    is_active = db.Column(db.Boolean, default=True)
+
+    # Timestamps
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships
+    user = db.relationship('User', backref='health_records')
+
+    def __repr__(self):
+        return f'<HealthRecord {self.record_id} - {self.record_type}>'
+
+# =====================
+# Staking & Referrals
+# =====================
+
+class StakingPosition(db.Model):
+    __tablename__ = 'staking_positions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    amount = db.Column(db.Numeric(precision=18, scale=8), nullable=False)
+    apy_percent = db.Column(db.Float, nullable=False)
+    lock_period_days = db.Column(db.Integer, nullable=False)
+
+    status = db.Column(db.String(20), default='active')  # active, unstaked, completed
+
+    start_time = db.Column(db.DateTime, default=datetime.utcnow)
+    end_time = db.Column(db.DateTime, nullable=True)
+
+    last_reward_calc = db.Column(db.DateTime, default=datetime.utcnow)
+    accumulated_rewards = db.Column(db.Numeric(precision=18, scale=8), default=0)
+
+    stake_tx_hash = db.Column(db.String(66), nullable=True)
+    unstake_tx_hash = db.Column(db.String(66), nullable=True)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = db.relationship('User', backref=db.backref('staking_positions', lazy=True))
 
     def to_dict(self):
         return {
             'id': self.id,
             'user_id': self.user_id,
-            'family_member_id': self.family_member_id,
-            'doctor_id': self.doctor_id,
-            'prescription_date': self.prescription_date.isoformat() if self.prescription_date else None,
-            'right_eye': {
-                'sphere': self.od_sphere,
-                'cylinder': self.od_cylinder,
-                'axis': self.od_axis,
-                'add': self.od_add,
-                'prism': self.od_prism,
-                'base': self.od_base
-            },
-            'left_eye': {
-                'sphere': self.os_sphere,
-                'cylinder': self.os_cylinder,
-                'axis': self.os_axis,
-                'add': self.os_add,
-                'prism': self.os_prism,
-                'base': self.os_base
-            },
-            'measurements': {
-                'pupillary_distance': self.pupillary_distance,
-                'near_pd': self.near_pd,
-                'vertex_distance': self.vertex_distance
-            },
-            'details': {
-                'prescription_type': self.prescription_type,
-                'lens_type': self.lens_type,
-                'lens_material': self.lens_material,
-                'coating': self.coating
-            },
-            'metadata': {
-                'prescription_source': self.prescription_source,
-                'image_url': self.image_url,
-                'ocr_confidence': self.ocr_confidence,
-                'notes': self.notes,
-                'is_current': self.is_current,
-                'expiry_date': self.expiry_date.isoformat() if self.expiry_date else None
-            },
-            'created_at': self.created_at.isoformat() if self.created_at else None,
-            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+            'amount': float(self.amount),
+            'apy_percent': self.apy_percent,
+            'lock_period_days': self.lock_period_days,
+            'status': self.status,
+            'start_time': self.start_time.isoformat() if self.start_time else None,
+            'end_time': self.end_time.isoformat() if self.end_time else None,
+            'last_reward_calc': self.last_reward_calc.isoformat() if self.last_reward_calc else None,
+            'accumulated_rewards': float(self.accumulated_rewards),
+            'stake_tx_hash': self.stake_tx_hash,
+            'unstake_tx_hash': self.unstake_tx_hash,
         }
 
-# Lens Recommendation Model
-class LensRecommendation(db.Model):
-    __tablename__ = 'lens_recommendations'
+class StakingTransaction(db.Model):
+    __tablename__ = 'staking_transactions'
 
     id = db.Column(db.Integer, primary_key=True)
-    prescription_id = db.Column(db.Integer, db.ForeignKey('eye_prescriptions.id'), nullable=False)
-    recommendation_type = db.Column(db.String(50), nullable=False)  # lens_type, material, coating, etc.
-    recommended_value = db.Column(db.String(100), nullable=False)
-    reason = db.Column(db.Text)
-    confidence_score = db.Column(db.Float, default=0.0)
-    priority = db.Column(db.Integer, default=1)  # 1=high, 2=medium, 3=low
-    estimated_cost = db.Column(db.Float)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    position_id = db.Column(db.Integer, db.ForeignKey('staking_positions.id'), nullable=True, index=True)
+
+    action = db.Column(db.String(20), nullable=False)  # stake, unstake, reward
+    amount = db.Column(db.Numeric(precision=18, scale=8), nullable=False)
+    tx_hash = db.Column(db.String(66), nullable=True)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    prescription = db.relationship('EyePrescription', backref='recommendations')
+    user = db.relationship('User', backref=db.backref('staking_transactions', lazy=True))
+    position = db.relationship('StakingPosition', backref=db.backref('transactions', lazy=True))
 
     def to_dict(self):
         return {
             'id': self.id,
-            'prescription_id': self.prescription_id,
-            'recommendation_type': self.recommendation_type,
-            'recommended_value': self.recommended_value,
-            'reason': self.reason,
-            'confidence_score': self.confidence_score,
-            'priority': self.priority,
-            'estimated_cost': self.estimated_cost,
-            'created_at': self.created_at.isoformat() if self.created_at else None
+            'user_id': self.user_id,
+            'position_id': self.position_id,
+            'action': self.action,
+            'amount': float(self.amount),
+            'tx_hash': self.tx_hash,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+        }
+
+class Referral(db.Model):
+    __tablename__ = 'referrals'
+
+    id = db.Column(db.Integer, primary_key=True)
+    referrer_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    referred_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
+
+    referral_code = db.Column(db.String(16), unique=True, nullable=False, index=True)
+    status = db.Column(db.String(20), default='generated')  # generated, clicked, converted
+
+    reward_amount = db.Column(db.Numeric(precision=18, scale=8), default=0)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    clicked_at = db.Column(db.DateTime, nullable=True)
+    converted_at = db.Column(db.DateTime, nullable=True)
+
+    referrer = db.relationship('User', foreign_keys=[referrer_user_id], backref=db.backref('referrals_made', lazy=True))
+    referred = db.relationship('User', foreign_keys=[referred_user_id], backref=db.backref('referrals_received', lazy=True))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'referrer_user_id': self.referrer_user_id,
+            'referred_user_id': self.referred_user_id,
+            'referral_code': self.referral_code,
+            'status': self.status,
+            'reward_amount': float(self.reward_amount),
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'clicked_at': self.clicked_at.isoformat() if self.clicked_at else None,
+            'converted_at': self.converted_at.isoformat() if self.converted_at else None,
         }

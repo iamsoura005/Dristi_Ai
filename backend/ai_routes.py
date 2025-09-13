@@ -5,11 +5,13 @@ Provides comprehensive endpoints for AI-powered eye disease analysis
 
 import os
 import json
+from datetime import datetime
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
 from ai_disease_service import ai_detector
 from models import db, User, FamilyMember, AIAnalysis
+from reward_service import reward_service
 
 ai_bp = Blueprint('ai', __name__, url_prefix='/api/ai')
 
@@ -92,11 +94,27 @@ def analyze_eye_image():
         
         if not analysis_result['success']:
             return jsonify({'error': analysis_result['error']}), 500
-        
-        return jsonify({
+
+        # Award VisionCoins for completing the analysis
+        reward_result = reward_service.process_eye_analysis_reward(
+            current_user_id,
+            analysis_result['analysis']
+        )
+
+        response_data = {
             'message': 'Analysis completed successfully',
             'analysis': analysis_result['analysis']
-        }), 200
+        }
+
+        # Include reward information if successful
+        if reward_result.get('success'):
+            response_data['reward'] = {
+                'amount': reward_result['amount'],
+                'reason': reward_result['reason'],
+                'new_balance': reward_result.get('new_balance', 0)
+            }
+
+        return jsonify(response_data), 200
         
     except Exception as e:
         return jsonify({'error': f'Analysis failed: {str(e)}'}), 500
