@@ -505,9 +505,9 @@ class ConsultationMessage(db.Model):
     is_encrypted = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    appointment = db.relationship('Appointment', backref='messages')
-    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_messages')
-    receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_messages')
+    appointment = db.relationship('Appointment', backref='consultation_messages')
+    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_consultation_messages')
+    receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_consultation_messages')
 
     def to_dict(self):
         return {
