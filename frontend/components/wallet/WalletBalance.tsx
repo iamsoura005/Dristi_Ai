@@ -1,7 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wallet, ChevronDown, Eye, Coins, Loader2 } from "lucide-react";
+import { Wallet, ChevronDown, Eye, Coins, Loader2, Plus, Shield, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import WalletCreationModal from "./WalletCreationModal";
 
 interface WalletBalances {
   ETH: number;
@@ -12,7 +15,10 @@ interface WalletBalances {
 
 function authHeader() {
   if (typeof window === "undefined") return {} as any;
-  const token = localStorage.getItem("token") || localStorage.getItem("access_token");
+  const token = localStorage.getItem("token") ||
+                localStorage.getItem("access_token") ||
+                localStorage.getItem("auth_token") ||
+                localStorage.getItem("hackloop_auth_token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -21,22 +27,46 @@ export default function WalletBalance() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [showWalletCreation, setShowWalletCreation] = useState(false);
+  const [noWalletFound, setNoWalletFound] = useState(false);
 
   async function loadBalances() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/blockchain/wallet/balances", {
-        headers: { ...authHeader() }
+      // Check if user is authenticated
+      const headers = authHeader();
+      if (!headers.Authorization) {
+        setError("Please log in to view wallet balances");
+        return;
+      }
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/blockchain/wallet/balances`, {
+        headers: { ...headers }
       });
+
       if (!res.ok) {
         if (res.status === 401) {
-          throw new Error("Authentication required");
+          setError("Authentication required - please log in");
+          return;
         }
-        throw new Error(`HTTP ${res.status}`);
+        if (res.status === 404) {
+          setNoWalletFound(true);
+          setError(null); // Clear error since we'll show wallet creation UI
+          return;
+        }
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${res.status}`);
       }
+
       const data = await res.json();
-      setBalances(data.balances);
+      if (data.success && data.balances) {
+        setBalances(data.balances);
+      } else {
+        throw new Error("Invalid response format");
+      }
     } catch (e: any) {
       console.error("Failed to load wallet balances:", e);
       setError(`Failed to load balances: ${e.message}`);
@@ -45,12 +75,34 @@ export default function WalletBalance() {
     }
   }
 
+  const handleWalletCreated = async () => {
+    setNoWalletFound(false);
+    setShowWalletCreation(false);
+    // Reload balances after wallet creation
+    await loadBalances();
+  };
+
   useEffect(() => {
-    loadBalances();
-    // Refresh balances every 30 seconds
-    const interval = setInterval(loadBalances, 30000);
-    return () => clearInterval(interval);
+    setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (isClient) {
+      // Check if user is authenticated before loading
+      const headers = authHeader();
+      if (headers.Authorization) {
+        loadBalances();
+        // Refresh balances every 30 seconds
+        const interval = setInterval(loadBalances, 30000);
+        return () => clearInterval(interval);
+      } else {
+        // Clear any previous error when not authenticated
+        setError(null);
+        setBalances(null);
+        setNoWalletFound(false);
+      }
+    }
+  }, [isClient]);
 
   if (loading && !balances) {
     return (
@@ -61,8 +113,53 @@ export default function WalletBalance() {
     );
   }
 
-  if (error || !balances) {
-    return null; // Hide if there's an error or no balances
+  // Show wallet creation UI when no wallet is found
+  if (noWalletFound) {
+    return (
+      <>
+        <button
+          type="button"
+          onClick={() => setShowWalletCreation(true)}
+          className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 transition-colors"
+        >
+          <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+            <Plus className="w-4 h-4 text-blue-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-blue-400 font-medium">Create Wallet</p>
+            <p className="text-xs text-blue-300/60">Set up your blockchain wallet</p>
+          </div>
+        </button>
+
+        <WalletCreationModal
+          isOpen={showWalletCreation}
+          onClose={() => setShowWalletCreation(false)}
+          onSuccess={handleWalletCreated}
+        />
+      </>
+    );
+  }
+
+  if (error) {
+    // Don't show error if it's just an authentication issue - user might not be logged in
+    if (error.includes("Authentication required") || error.includes("Please log in")) {
+      return null; // Hide the component instead of showing error
+    }
+
+    return (
+      <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20">
+        <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
+          <Wallet className="w-4 h-4 text-red-400" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm text-red-400 truncate">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!balances && !loading) {
+    return null; // Hide if no balances and not loading
   }
 
   return (
@@ -171,6 +268,13 @@ export default function WalletBalance() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Wallet Creation Modal - available even when balances exist */}
+      <WalletCreationModal
+        isOpen={showWalletCreation}
+        onClose={() => setShowWalletCreation(false)}
+        onSuccess={handleWalletCreated}
+      />
     </div>
   );
 }

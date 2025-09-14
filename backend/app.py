@@ -1,5 +1,5 @@
 import os
-# import numpy as np  # Commented out for demo mode
+import numpy as np  # Always import numpy
 import json
 import os
 import random
@@ -18,13 +18,15 @@ explainable_ai_enabled = False
 
 # Import refractive power detection modules
 try:
-    from ml_models.refractive_power_detector import RefractiveDetector
+    from ml_models.myopia_classifier import MyopiaClassifier
     from ml_models.fundus_preprocessor import FundusPreprocessor
     refractive_power_available = True
-    print("✅ Refractive power detection modules loaded successfully")
+    print("✅ Myopia classification modules loaded successfully")
 except ImportError as e:
-    print(f"⚠️ Refractive power detection not available: {e}")
+    print(f"⚠️ Myopia classification not available: {e}")
     refractive_power_available = False
+    MyopiaClassifier = None  # type: ignore
+    FundusPreprocessor = None  # type: ignore
 # import tensorflow as tf  # Commented out for demo mode
 from PIL import Image
 import io
@@ -219,19 +221,28 @@ except Exception as e:
 print(f"Available eye disease classes: {class_names}")
 print(f"Available color vision classes: {ishihara_classes}")
 
-# Initialize refractive power detection
-refractive_detector = None
+# Initialize myopia classification
+myopia_classifier = None
 refractive_preprocessor = None
 refractive_power_loaded = False
 
-if refractive_power_available:
+if refractive_power_available and MyopiaClassifier is not None and FundusPreprocessor is not None:
     try:
-        refractive_detector = RefractiveDetector()
+        myopia_classifier = MyopiaClassifier()
         refractive_preprocessor = FundusPreprocessor()
-        refractive_power_loaded = True
-        print("✅ Refractive power detection system initialized!")
+        # Check if the classifier was properly initialized
+        if hasattr(myopia_classifier, 'is_loaded') and myopia_classifier.is_loaded:
+            refractive_power_loaded = True
+            print("✅ Myopia classification system initialized!")
+        else:
+            refractive_power_loaded = False
+            print("⚠️ Myopia classification initialized but dataset-based only")
+            # Still allow dataset-based classification
+            if hasattr(myopia_classifier, 'dataset_path') and os.path.exists(myopia_classifier.dataset_path):
+                refractive_power_loaded = True
+                print("✅ Dataset-based myopia classification enabled!")
     except Exception as e:
-        print(f"❌ Error initializing refractive power detection: {str(e)}")
+        print(f"❌ Error initializing myopia classification: {str(e)}")
         refractive_power_loaded = False
 
 print("\n🚀 Backend server ready!")
@@ -765,30 +776,30 @@ def predict():
                 # Adjust confidence based on image quality
                 quality_adjusted_confidence = confidence * image_confidence_adjustment
 
-                # Check if confidence is suspiciously low for medical diagnosis
+                # Check if confidence is low for medical diagnosis
                 if quality_adjusted_confidence < 0.4 or image_quality in ['very_low', 'low']:
                     print(f"⚠️ Low confidence prediction: {quality_adjusted_confidence:.4f}, Quality: {image_quality}")
 
                     # Determine status based on quality and confidence
                     if image_quality == 'very_low':
                         status = 'very_low_quality'
-                        message = 'Very low image quality detected. Results should be interpreted with extreme caution.'
+                        message = f'Very low image quality detected. Highest probability: {predicted_class}. Results should be interpreted with extreme caution.'
                     elif image_quality == 'low':
                         status = 'low_quality'
-                        message = 'Low image quality detected. Results may be less reliable than with high-quality images.'
+                        message = f'Low image quality detected. Highest probability: {predicted_class}. Results may be less reliable than with high-quality images.'
                     else:
                         status = 'low_confidence'
-                        message = 'Low confidence in prediction. The image may not be a clear fundus photograph or may require professional medical evaluation.'
+                        message = f'Low confidence prediction. Highest probability: {predicted_class}. Consider professional medical evaluation for confirmation.'
 
                     response = {
-                        'predicted_class': 'uncertain' if quality_adjusted_confidence < 0.3 else predicted_class,
+                        'predicted_class': predicted_class,  # Always show the highest probability disease
                         'confidence': round(quality_adjusted_confidence, 4),
                         'original_confidence': round(confidence, 4),
                         'all_scores': confidence_scores,
                         'status': status,
                         'mode': 'production',
                         'message': message,
-                        'suggestion': 'Please ensure the image is a high-quality fundus photograph taken with proper medical equipment.',
+                        'suggestion': 'Please ensure the image is a high-quality fundus photograph taken with proper medical equipment.' if quality_adjusted_confidence < 0.4 else 'Analysis completed successfully.',
                         'original_prediction': predicted_class,
                         'image_quality': image_quality,
                         'quality_warnings': image_warnings,
@@ -929,7 +940,7 @@ def predict():
 
 @app.route('/analyze/refractive-power', methods=['POST'])
 def analyze_refractive_power():
-    """Analyze fundus image for refractive power estimation"""
+    """Analyze fundus image for myopia classification"""
     current_user_id = None
     try:
         from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
@@ -938,10 +949,10 @@ def analyze_refractive_power():
     except:
         pass  # Not authenticated, continue as anonymous user
 
-    # Check if refractive power detection is available
-    if not refractive_power_loaded or refractive_detector is None:
+    # Check if myopia classification is available
+    if not refractive_power_loaded or myopia_classifier is None:
         return jsonify({
-            'error': 'Refractive power detection not available',
+            'error': 'Myopia classification not available',
             'message': 'This feature is currently in development',
             'status': 'service_unavailable'
         }), 503
@@ -967,11 +978,11 @@ def analyze_refractive_power():
         if img.mode != 'RGB':
             img = img.convert('RGB')
 
-        print(f"Processing refractive power analysis for: {file.filename}, Size: {img.size}")
+        print(f"Processing myopia classification for: {file.filename}, Size: {img.size}")
 
-        # Perform refractive power analysis
+        # Perform myopia classification analysis
         try:
-            result = refractive_detector.predict(img)
+            result = myopia_classifier.predict(img)
 
             if not result['success']:
                 return jsonify({
@@ -980,23 +991,40 @@ def analyze_refractive_power():
                     'recommendations': result.get('recommendations', [])
                 }), 400
 
-            # Prepare response
+            # Prepare JSON-safe response
+            def make_json_safe(obj):
+                """Convert numpy types to native Python types for JSON serialization"""
+                if isinstance(obj, dict):
+                    return {k: make_json_safe(v) for k, v in obj.items()}
+                elif isinstance(obj, list):
+                    return [make_json_safe(item) for item in obj]
+                elif isinstance(obj, np.integer):
+                    return int(obj)
+                elif isinstance(obj, np.floating):
+                    return float(obj)
+                elif isinstance(obj, np.bool_):
+                    return bool(obj)
+                elif isinstance(obj, np.ndarray):
+                    return obj.tolist()
+                else:
+                    return obj
+            
             response = {
-                'spherical_equivalent': result['spherical_equivalent'],
-                'confidence': result['confidence'],
-                'prescription_category': result['prescription_category'],
-                'quality_assessment': result['quality_assessment'],
-                'recommendations': result['recommendations'],
-                'model_version': result['model_version'],
-                'analysis_timestamp': result['analysis_timestamp'],
+                'classification': make_json_safe(result['classification']),
+                'confidence': make_json_safe(result['confidence']),
+                'class_probabilities': make_json_safe(result['class_probabilities']),
+                'quality_assessment': make_json_safe(result['quality_assessment']),
+                'recommendations': make_json_safe(result['recommendations']),
+                'model_version': make_json_safe(result['model_version']),
+                'analysis_timestamp': make_json_safe(result['analysis_timestamp']),
                 'status': 'success',
-                'message': 'Refractive power analysis completed successfully'
+                'message': 'Myopia classification completed successfully'
             }
 
-            # Add note for fallback predictions
-            if result.get('model_version') == 'fallback_demo':
-                response['note'] = result.get('note')
-                response['status'] = 'demo_mode'
+            # Add note for dataset-based predictions
+            if result.get('model_version') == 'dataset_based_v1.0':
+                response['note'] = 'Analysis based on trained dataset patterns'
+                response['status'] = 'production_ready'
 
             # Save result for authenticated user
             if current_user_id:

@@ -25,6 +25,7 @@ class AuthService {
   private static instance: AuthService
   private readonly tokenKey = 'hackloop_auth_token'
   private readonly userKey = 'hackloop_user'
+  private readonly baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
   static getInstance(): AuthService {
     if (!AuthService.instance) {
@@ -99,7 +100,7 @@ class AuthService {
 
   // API calls
   async login(email: string, password: string): Promise<{ user: User; access_token: string }> {
-    const response = await fetch('http://localhost:5000/auth/login', {
+    const response = await fetch(`${this.baseUrl}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -126,7 +127,7 @@ class AuthService {
     last_name: string
     role?: 'patient' | 'doctor' | 'admin'
   }): Promise<{ user: User; access_token: string }> {
-    const response = await fetch('http://localhost:5000/auth/register', {
+    const response = await fetch(`${this.baseUrl}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -159,7 +160,7 @@ class AuthService {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/auth/me', {
+      const response = await fetch(`${this.baseUrl}/auth/me`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -190,7 +191,7 @@ class AuthService {
       throw new Error('No authentication token')
     }
 
-    const response = await fetch('http://localhost:5000/auth/refresh', {
+    const response = await fetch(`${this.baseUrl}/auth/refresh`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -213,7 +214,7 @@ class AuthService {
     
     if (token) {
       try {
-        await fetch('http://localhost:5000/auth/logout', {
+        await fetch(`${this.baseUrl}/auth/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

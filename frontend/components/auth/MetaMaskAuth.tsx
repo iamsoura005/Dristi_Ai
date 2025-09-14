@@ -21,7 +21,14 @@ export default function MetaMaskAuth({ onSuccess, onError }: MetaMaskAuthProps) 
   const [currentAccount, setCurrentAccount] = useState<string | null>(null)
   const [networkInfo, setNetworkInfo] = useState<{ chainId: string; networkName: string } | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const { login } = useAuth()
+  const [isClient, setIsClient] = useState(false)
+  const [connectionStep, setConnectionStep] = useState<string>('')
+  const { loginWithWallet } = useAuth()
+
+  // Ensure we're on the client side to avoid hydration mismatch
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
     checkConnection()
@@ -63,39 +70,79 @@ export default function MetaMaskAuth({ onSuccess, onError }: MetaMaskAuthProps) 
   }
 
   const handleConnectWallet = async () => {
+    // Check if already connecting to prevent race conditions
+    const connectionState = metaMaskAuthService.getConnectionState()
+    if (connectionState.isConnecting || connectionState.isAuthenticating) {
+      setConnectionStep('Please wait, connection already in progress...')
+      toast.info('Connection already in progress. Please wait...')
+      return
+    }
+
     setIsConnecting(true)
     setError(null)
+    setConnectionStep('Initializing...')
 
     try {
-      // Authenticate with wallet
-      const authResponse = await metaMaskAuthService.authenticateWithWallet()
-      
-      // Store token and user data
-      localStorage.setItem('token', authResponse.access_token)
-      localStorage.setItem('user', JSON.stringify(authResponse.user))
-      
-      // Update auth context (simulate login)
-      // Note: We'll need to update the auth provider to handle wallet auth
-      
-      toast.success('Successfully connected with MetaMask!')
-      
+      // First test backend connectivity
+      setConnectionStep('Testing backend connectivity...')
+      console.log('🔍 Testing backend connectivity...')
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const healthResponse = await fetch(`${apiUrl}/health`)
+      if (!healthResponse.ok) {
+        throw new Error('Backend server is not responding. Please ensure it is running on port 5000.')
+      }
+      console.log('✅ Backend is reachable')
+
+      // Test wallet endpoints
+      setConnectionStep('Verifying wallet endpoints...')
+      const walletTestResponse = await fetch(`${apiUrl}/api/wallet/test`)
+      if (!walletTestResponse.ok) {
+        throw new Error('Wallet authentication endpoints are not available.')
+      }
+      console.log('✅ Wallet endpoints are available')
+
+      // Authenticate with wallet using the auth context
+      setConnectionStep('Connecting to MetaMask...')
+      console.log('🦊 Starting MetaMask authentication...')
+      const walletAuthResponse = await loginWithWallet()
+      console.log('✅ MetaMask authentication successful', walletAuthResponse.user.first_name)
+
+      setConnectionStep('Authentication successful!')
+      toast.success(`Successfully connected with MetaMask! Welcome, ${walletAuthResponse.user.first_name}!`)
+
       if (onSuccess) {
         onSuccess()
       }
-      
-      // Refresh to update the app state
-      window.location.reload()
-      
+
     } catch (error: any) {
-      const errorMessage = error.message || 'Failed to connect wallet'
+      console.error('❌ MetaMask authentication failed:', error)
+
+      // Reset MetaMask service state on error
+      metaMaskAuthService.resetConnectionState()
+
+      let errorMessage = error.message || 'Failed to connect wallet'
+
+      // Handle specific MetaMask errors
+      if (errorMessage.includes('Already processing eth_requestAccounts')) {
+        errorMessage = 'MetaMask is already processing a connection request. Please check your MetaMask extension and try again.'
+        setConnectionStep('Connection request already pending...')
+      } else if (errorMessage.includes('User rejected')) {
+        errorMessage = 'Connection was cancelled. Please try again when ready.'
+        setConnectionStep('Connection cancelled by user')
+      } else {
+        setConnectionStep('Connection failed')
+      }
+
       setError(errorMessage)
       toast.error(errorMessage)
-      
+
       if (onError) {
         onError(errorMessage)
       }
     } finally {
       setIsConnecting(false)
+      // Clear connection step after a delay
+      setTimeout(() => setConnectionStep(''), 3000)
     }
   }
 
@@ -103,12 +150,34 @@ export default function MetaMaskAuth({ onSuccess, onError }: MetaMaskAuthProps) 
     window.open('https://metamask.io/download/', '_blank')
   }
 
+  // Show loading state during hydration to prevent mismatch
+  if (!isClient) {
+    return (
+      <Card className="w-full max-w-md mx-auto bg-card">
+        <CardHeader className="text-center">
+          <CardTitle className="flex items-center justify-center gap-2">
+            <Wallet className="w-6 h-6 text-white" />
+            Connect with MetaMask
+          </CardTitle>
+          <CardDescription>
+            Loading wallet connection...
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-center py-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   if (!metaMaskAuthService.isMetaMaskInstalled()) {
     return (
-      <Card className="w-full max-w-md mx-auto">
-        <CardHeader className="text-center ">
-          <CardTitle className="flex items-center justify-center gap-2 text-black">
-            <Wallet className="w-6 h-6 text-orange-500" />
+      <Card className="w-full max-w-md mx-auto bg-card">
+        <CardHeader className="text-center">
+          <CardTitle className="flex items-center justify-center gap-2">
+            <Wallet className="w-6 h-6 text-white" />
             MetaMask Required
           </CardTitle>
           <CardDescription>
@@ -122,12 +191,12 @@ export default function MetaMaskAuth({ onSuccess, onError }: MetaMaskAuthProps) 
               Please install MetaMask browser extension to continue with wallet authentication.
             </AlertDescription>
           </Alert>
-          
+
           <Button onClick={installMetaMask} className="w-full" size="lg">
             <ExternalLink className="w-4 h-4 mr-2" />
             Install MetaMask
           </Button>
-          
+
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
               After installing, refresh this page to continue
@@ -139,8 +208,8 @@ export default function MetaMaskAuth({ onSuccess, onError }: MetaMaskAuthProps) 
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto bg-black">
-      <CardHeader className="text-center ">
+    <Card className="w-full max-w-md mx-auto bg-card">
+      <CardHeader className="text-center">
         <CardTitle className="flex items-center justify-center gap-2 text-white">
           <Wallet className="w-6 h-6 text-white" />
           Connect with MetaMask
@@ -154,6 +223,13 @@ export default function MetaMaskAuth({ onSuccess, onError }: MetaMaskAuthProps) 
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {isConnecting && connectionStep && (
+          <Alert>
+            <Wallet className="h-4 w-4 animate-pulse" />
+            <AlertDescription>{connectionStep}</AlertDescription>
           </Alert>
         )}
 
@@ -217,7 +293,7 @@ export default function MetaMaskAuth({ onSuccess, onError }: MetaMaskAuthProps) 
               ) : (
                 <Wallet className="w-5 h-5 mr-2" />
               )}
-              {isConnecting ? 'Connecting...' : 'Connect MetaMask'}
+              {isConnecting ? (connectionStep || 'Connecting...') : 'Connect MetaMask'}
             </Button>
           </motion.div>
         )}

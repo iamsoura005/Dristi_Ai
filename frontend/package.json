@@ -78,7 +78,9 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.0.0",
     "zod": "3.25.67",
-    "zustand": "^5.0.8"
+    "zustand": "^5.0.8",
+    "@supabase/supabase-js": "^2.45.4",
+    "@supabase/storage-js": "^2.7.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.9",

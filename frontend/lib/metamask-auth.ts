@@ -29,7 +29,13 @@ export interface ProfileData {
 
 class MetaMaskAuthService {
   private static instance: MetaMaskAuthService
-  private baseUrl = 'http://localhost:5001'
+  private baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+
+  // Connection state management
+  private isConnecting = false
+  private connectionPromise: Promise<string> | null = null
+  private isAuthenticating = false
+  private authenticationPromise: Promise<WalletAuthResponse> | null = null
 
   static getInstance(): MetaMaskAuthService {
     if (!MetaMaskAuthService.instance) {
@@ -46,14 +52,50 @@ class MetaMaskAuthService {
   }
 
   /**
-   * Connect to MetaMask wallet
+   * Connect to MetaMask wallet with race condition protection
    */
   async connectWallet(): Promise<string> {
     if (!this.isMetaMaskInstalled()) {
       throw new Error('MetaMask is not installed. Please install MetaMask to continue.')
     }
 
+    // If already connecting, return the existing promise
+    if (this.isConnecting && this.connectionPromise) {
+      console.log('⏳ Connection already in progress, waiting for existing request...')
+      return this.connectionPromise
+    }
+
+    // Check if already connected first
     try {
+      const currentAccount = await this.getCurrentAccount()
+      if (currentAccount) {
+        console.log('✅ Already connected to:', currentAccount)
+        return currentAccount
+      }
+    } catch (error) {
+      console.log('🔍 No existing connection, proceeding with new connection...')
+    }
+
+    // Set connecting state and create new connection promise
+    this.isConnecting = true
+    this.connectionPromise = this._performConnection()
+
+    try {
+      const result = await this.connectionPromise
+      return result
+    } finally {
+      // Reset connection state
+      this.isConnecting = false
+      this.connectionPromise = null
+    }
+  }
+
+  /**
+   * Internal method to perform the actual connection
+   */
+  private async _performConnection(): Promise<string> {
+    try {
+      console.log('🔗 Requesting MetaMask account access...')
       const accounts = await window.ethereum.request({
         method: 'eth_requestAccounts',
       })
@@ -62,10 +104,16 @@ class MetaMaskAuthService {
         throw new Error('No accounts found. Please connect your MetaMask wallet.')
       }
 
+      console.log('✅ MetaMask connection successful:', accounts[0])
       return accounts[0]
     } catch (error: any) {
+      console.error('❌ MetaMask connection failed:', error)
+
       if (error.code === 4001) {
         throw new Error('User rejected the connection request.')
+      }
+      if (error.code === -32002) {
+        throw new Error('MetaMask is already processing a connection request. Please check your MetaMask extension.')
       }
       throw new Error(`Failed to connect wallet: ${error.message}`)
     }
@@ -94,22 +142,39 @@ class MetaMaskAuthService {
    * Get nonce for wallet signature
    */
   async getNonce(walletAddress: string): Promise<{ message: string; nonce: string }> {
-    const response = await fetch(`${this.baseUrl}/api/wallet/nonce`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        wallet_address: walletAddress,
-      }),
-    })
+    console.log('🔍 Getting nonce for wallet:', walletAddress)
+    console.log('🌐 API URL:', `${this.baseUrl}/api/wallet/nonce`)
 
-    if (!response.ok) {
-      const error = await response.json()
-      throw new Error(error.error || 'Failed to get nonce')
+    try {
+      const response = await fetch(`${this.baseUrl}/api/wallet/nonce`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          wallet_address: walletAddress,
+        }),
+      })
+
+      console.log('📡 Response status:', response.status)
+      console.log('📡 Response ok:', response.ok)
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('❌ Error response:', errorText)
+        throw new Error(`Failed to get nonce: ${response.status} ${errorText}`)
+      }
+
+      const data = await response.json()
+      console.log('✅ Nonce received:', data.nonce)
+      return data
+    } catch (error) {
+      console.error('❌ Fetch error:', error)
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Cannot connect to backend server. Please ensure the backend is running on port 5000.')
+      }
+      throw error
     }
-
-    return response.json()
   }
 
   /**
@@ -186,27 +251,82 @@ class MetaMaskAuthService {
   }
 
   /**
-   * Full wallet authentication flow
+   * Full wallet authentication flow with race condition protection
    */
   async authenticateWithWallet(): Promise<WalletAuthResponse> {
+    // If already authenticating, return the existing promise
+    if (this.isAuthenticating && this.authenticationPromise) {
+      console.log('⏳ Authentication already in progress, waiting for existing request...')
+      return this.authenticationPromise
+    }
+
+    // Set authenticating state and create new authentication promise
+    this.isAuthenticating = true
+    this.authenticationPromise = this._performAuthentication()
+
+    try {
+      const result = await this.authenticationPromise
+      return result
+    } finally {
+      // Reset authentication state
+      this.isAuthenticating = false
+      this.authenticationPromise = null
+    }
+  }
+
+  /**
+   * Internal method to perform the actual authentication
+   */
+  private async _performAuthentication(): Promise<WalletAuthResponse> {
+    console.log('🚀 Starting wallet authentication flow...')
+
     try {
       // Step 1: Connect wallet
+      console.log('📱 Step 1: Connecting wallet...')
       const walletAddress = await this.connectWallet()
+      console.log('✅ Wallet connected:', walletAddress)
 
       // Step 2: Get nonce
+      console.log('🔑 Step 2: Getting nonce...')
       const { message, nonce } = await this.getNonce(walletAddress)
+      console.log('✅ Nonce received')
 
       // Step 3: Sign message
+      console.log('✍️ Step 3: Signing message...')
       const signature = await this.signMessage(message, walletAddress)
+      console.log('✅ Message signed')
 
       // Step 4: Verify signature and authenticate
+      console.log('🔐 Step 4: Verifying signature...')
       const authResponse = await this.verifySignature(walletAddress, signature, message)
+      console.log('✅ Authentication successful')
 
       return authResponse
     } catch (error) {
-      console.error('Wallet authentication failed:', error)
+      console.error('❌ Wallet authentication failed:', error)
       throw error
     }
+  }
+
+  /**
+   * Get current connection state
+   */
+  getConnectionState(): { isConnecting: boolean; isAuthenticating: boolean } {
+    return {
+      isConnecting: this.isConnecting,
+      isAuthenticating: this.isAuthenticating
+    }
+  }
+
+  /**
+   * Reset connection state (use in case of errors)
+   */
+  resetConnectionState(): void {
+    console.log('🔄 Resetting MetaMask connection state...')
+    this.isConnecting = false
+    this.connectionPromise = null
+    this.isAuthenticating = false
+    this.authenticationPromise = null
   }
 
   /**

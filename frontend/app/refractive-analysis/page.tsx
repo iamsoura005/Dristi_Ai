@@ -12,9 +12,11 @@ import { Navigation } from "@/components/navigation"
 import { toast } from "sonner"
 
 interface RefractiveResult {
-  spherical_equivalent: number
+  classification: string
   confidence: number
-  prescription_category: string
+  class_probabilities?: {
+    [key: string]: number
+  }
   quality_assessment: {
     quality_level: string
     overall_score: number
@@ -28,6 +30,7 @@ interface RefractiveResult {
   recommendations: string[]
   model_version: string
   status: string
+  message: string
   note?: string
 }
 
@@ -79,7 +82,7 @@ export default function RefractiveAnalysisPage() {
       const formData = new FormData()
       formData.append('file', selectedFile)
 
-      const response = await fetch('http://localhost:5000/analyze/refractive-power', {
+      const response = await fetch('http://127.0.0.1:5000/analyze/refractive-power', {
         method: 'POST',
         body: formData,
         credentials: 'include'
@@ -92,7 +95,7 @@ export default function RefractiveAnalysisPage() {
       }
 
       setResult(data)
-      toast.success('Refractive power analysis completed!')
+      toast.success('Myopia classification completed!')
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Analysis failed'
       setError(errorMessage)
@@ -144,10 +147,10 @@ export default function RefractiveAnalysisPage() {
           <br></br>
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-glass mb-4">
-              Refractive Power Analysis
+              Myopia Classification Analysis
             </h1>
             <p className="text-glass-muted text-lg max-w-2xl mx-auto">
-              Upload a fundus image to estimate refractive power (spherical equivalent) using AI analysis
+              Upload a fundus image to detect myopia (nearsightedness) using AI-powered analysis
             </p>
           </div>
 
@@ -216,7 +219,7 @@ export default function RefractiveAnalysisPage() {
                     ) : (
                       <>
                         <Eye className="w-4 h-4 mr-2" />
-                        Analyze Refractive Power
+                        Analyze for Myopia
                       </>
                     )}
                   </Button>
@@ -232,7 +235,7 @@ export default function RefractiveAnalysisPage() {
                   Analysis Results
                 </CardTitle>
                 <CardDescription className="refractive-muted">
-                  Refractive power estimation and quality assessment
+                  Myopia classification results and image quality
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -250,14 +253,16 @@ export default function RefractiveAnalysisPage() {
                     {/* Main Result */}
                     <div className="text-center p-6 glass-strong rounded-lg">
                       <h3 className="text-2xl font-bold refractive-text mb-2">
-                        {result.spherical_equivalent.toFixed(2)} Diopters
+                        {result.classification}
                       </h3>
                       <p className="refractive-muted mb-4">
-                        {getPrescriptionDescription(result.spherical_equivalent)}
+                        {result.classification === 'Myopia' 
+                          ? 'Myopia (nearsightedness) detected' 
+                          : 'Normal vision pattern detected'}
                       </p>
                       <div className="flex items-center justify-center gap-4">
-                        <Badge className={getCategoryColor(result.prescription_category)}>
-                          {result.prescription_category.replace('_', ' ')}
+                        <Badge className={result.classification === 'Myopia' ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'}>
+                          {result.classification}
                         </Badge>
                         <div className="flex items-center gap-2">
                           <span className="refractive-muted text-sm">Confidence:</span>
@@ -266,6 +271,20 @@ export default function RefractiveAnalysisPage() {
                           </span>
                         </div>
                       </div>
+                      
+                      {/* Class Probabilities */}
+                      {result.class_probabilities && (
+                        <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                          {Object.entries(result.class_probabilities).map(([className, prob]) => (
+                            <div key={className} className="flex justify-between">
+                              <span className="refractive-muted">{className}:</span>
+                              <span className="refractive-text font-medium">
+                                {(prob as number * 100).toFixed(1)}%
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     {/* Quality Assessment */}

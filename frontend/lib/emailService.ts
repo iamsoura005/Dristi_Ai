@@ -10,7 +10,7 @@ export interface EmailReportResponse {
 
 class EmailService {
   private static instance: EmailService
-  private readonly baseUrl = 'http://localhost:5000'
+  private readonly baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
   static getInstance(): EmailService {
     if (!EmailService.instance) {

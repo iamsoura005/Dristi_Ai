@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Send, AlertCircle, CheckCircle } from 'lucide-react';
@@ -139,7 +139,7 @@ const SendCrypto: React.FC<SendCryptoProps> = ({ onSuccess }) => {
         <CardContent className="space-y-4">
           {/* Cryptocurrency Type */}
           <div className="space-y-2">
-            <Label htmlFor="crypto-type">Cryptocurrency Type</Label>
+            <label htmlFor="crypto-type" className="text-sm font-medium">Cryptocurrency Type</label>
             <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select cryptocurrency" />
@@ -159,7 +159,7 @@ const SendCrypto: React.FC<SendCryptoProps> = ({ onSuccess }) => {
 
           {/* Recipient Address */}
           <div className="space-y-2">
-            <Label htmlFor="to-address">Recipient Address</Label>
+            <label htmlFor="to-address" className="text-sm font-medium">Recipient Address</label>
             <Input
               id="to-address"
               placeholder={
@@ -175,7 +175,7 @@ const SendCrypto: React.FC<SendCryptoProps> = ({ onSuccess }) => {
 
           {/* Amount */}
           <div className="space-y-2">
-            <Label htmlFor="amount">Amount</Label>
+            <label htmlFor="amount" className="text-sm font-medium">Amount</label>
             <Input
               id="amount"
               type="number"
@@ -193,7 +193,7 @@ const SendCrypto: React.FC<SendCryptoProps> = ({ onSuccess }) => {
 
           {/* Password */}
           <div className="space-y-2">
-            <Label htmlFor="password">Wallet Password</Label>
+            <label htmlFor="password" className="text-sm font-medium">Wallet Password</label>
             <Input
               id="password"
               type="password"

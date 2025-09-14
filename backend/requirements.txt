@@ -28,6 +28,20 @@ flask-socketio==5.3.6  # Real-time features
 python-socketio==5.10.0  # Socket.io support
 requests==2.31.0  # HTTP requests
 pytesseract==0.3.10  # OCR for prescription images
-cryptography==41.0.8  # Encryption for sensitive data
+cryptography>=41.0.0  # Encryption for sensitive data
 flask-limiter==3.5.0  # Rate limiting
 sqlalchemy-utils==0.41.1  # Database utilities
+
+# Supabase integration for medical research backend
+supabase==2.8.0  # Supabase Python client
+postgrest==0.16.11  # PostgREST client for Supabase
+storage3==0.7.7  # Supabase Storage client
+gotrue==2.8.2  # Supabase Auth client
+
+# ML Pipeline dependencies
+scikit-learn>=1.3.0  # Machine learning utilities
+pandas>=2.0.0  # Data manipulation and analysis
+seaborn>=0.12.0  # Statistical data visualization
+opencv-python>=4.8.0  # Computer vision library
+Pillow>=10.0.0  # Python Imaging Library (already included above)
+requests>=2.31.0  # HTTP library (already included above)

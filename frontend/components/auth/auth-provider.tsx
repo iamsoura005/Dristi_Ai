@@ -100,7 +100,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginWithWallet = async (): Promise<WalletAuthResponse> => {
     setLoading(true)
     try {
-      const walletAuthResponse = await metaMaskAuthService.authenticateWithWallet()
+      // Add timeout to prevent hanging on MetaMask requests
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error('Connection timeout. Please try again or check your MetaMask extension.'))
+        }, 60000) // 60 second timeout
+      })
+
+      const walletAuthResponse = await Promise.race([
+        metaMaskAuthService.authenticateWithWallet(),
+        timeoutPromise
+      ])
 
       // Store token and set user
       authService.setToken(walletAuthResponse.access_token)
@@ -110,6 +120,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return walletAuthResponse
     } catch (error) {
       setUser(null)
+      // Reset MetaMask service state on error
+      metaMaskAuthService.resetConnectionState()
       throw error
     } finally {
       setLoading(false)
