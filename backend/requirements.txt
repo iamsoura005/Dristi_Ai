@@ -36,7 +36,7 @@ sqlalchemy-utils==0.41.1  # Database utilities
 supabase==2.8.0  # Supabase Python client
 postgrest==0.16.11  # PostgREST client for Supabase
 storage3==0.7.7  # Supabase Storage client
-gotrue==2.8.2  # Supabase Auth client
+gotrue==2.12.4  # Supabase Auth client
 
 # ML Pipeline dependencies
 scikit-learn>=1.3.0  # Machine learning utilities

@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { motion } from "framer-motion"
-import { Eye, EyeOff, UserPlus, Mail, Lock, User, Users, ArrowRight, LogIn, Wallet } from "lucide-react"
+import { Eye, EyeOff, UserPlus, Mail, Lock, User, Users, ArrowRight, Wallet } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,7 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import MetaMaskAuth from "@/components/auth/MetaMaskAuth"
 
-export default function RegisterPage() {
+function RegisterContent() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -401,5 +401,13 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RegisterContent />
+    </Suspense>
   )
 }

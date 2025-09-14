@@ -1,0 +1,77 @@
+{
+  "timestamp": "2025-09-14T11:33:56.481109",
+  "overall_success": false,
+  "total_tests": 8,
+  "passed_tests": 4,
+  "failed_tests": 4,
+  "errors": [
+    "Sample Data: Data count mismatches: patients: expected 8, got 0; eyes: expected 16, got 0; fundus_images: expected 16, got 0; refractive_measurements: expected 16, got 0; model_training_logs: expected 5, got 0",
+    "CRUD Operations: CRUD operations failed: {'code': '42501', 'details': None, 'hint': None, 'message': 'new row violates row-level security policy for table \"patients\"'}",
+    "Storage Operations: No patients available for storage test",
+    "Model Training Logging: Model training logging failed: {'code': '42501', 'details': None, 'hint': None, 'message': 'new row violates row-level security policy for table \"model_training_logs\"'}"
+  ],
+  "detailed_results": [
+    {
+      "test": "Environment Variables",
+      "success": true,
+      "message": "All required environment variables are set",
+      "details": null,
+      "timestamp": "2025-09-14T11:33:46.939266"
+    },
+    {
+      "test": "Database Connection",
+      "success": true,
+      "message": "Successfully connected to Supabase database",
+      "details": null,
+      "timestamp": "2025-09-14T11:33:49.898947"
+    },
+    {
+      "test": "Database Schema",
+      "success": true,
+      "message": "All required tables exist",
+      "details": {
+        "patients": 0,
+        "eyes": 0,
+        "fundus_images": 0,
+        "refractive_measurements": 0,
+        "model_training_logs": 0
+      },
+      "timestamp": "2025-09-14T11:33:51.764080"
+    },
+    {
+      "test": "Sample Data",
+      "success": false,
+      "message": "Data count mismatches: patients: expected 8, got 0; eyes: expected 16, got 0; fundus_images: expected 16, got 0; refractive_measurements: expected 16, got 0; model_training_logs: expected 5, got 0",
+      "details": null,
+      "timestamp": "2025-09-14T11:33:53.082397"
+    },
+    {
+      "test": "ML Training Dataset",
+      "success": true,
+      "message": "Dataset view working correctly, 5 records retrieved",
+      "details": null,
+      "timestamp": "2025-09-14T11:33:53.794439"
+    },
+    {
+      "test": "CRUD Operations",
+      "success": false,
+      "message": "CRUD operations failed: {'code': '42501', 'details': None, 'hint': None, 'message': 'new row violates row-level security policy for table \"patients\"'}",
+      "details": null,
+      "timestamp": "2025-09-14T11:33:54.560082"
+    },
+    {
+      "test": "Storage Operations",
+      "success": false,
+      "message": "No patients available for storage test",
+      "details": null,
+      "timestamp": "2025-09-14T11:33:55.277041"
+    },
+    {
+      "test": "Model Training Logging",
+      "success": false,
+      "message": "Model training logging failed: {'code': '42501', 'details': None, 'hint': None, 'message': 'new row violates row-level security policy for table \"model_training_logs\"'}",
+      "details": null,
+      "timestamp": "2025-09-14T11:33:55.979775"
+    }
+  ]
+}

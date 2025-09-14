@@ -1,7 +1,6 @@
 import os
 import numpy as np  # Always import numpy
 import json
-import os
 import random
 import glob
 from flask import Flask, request, jsonify, send_file

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { motion } from "framer-motion"
-import { Upload, Eye, AlertCircle, CheckCircle, Info, Download, Share2 } from "lucide-react"
+import { Upload, Eye, AlertCircle, Info, Download, Loader2, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -10,6 +10,9 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Navigation } from "@/components/navigation"
 import { toast } from "sonner"
+import ShareableLinks from "@/components/ui/shareable-links"
+import EmailButton from "@/components/ui/email-button"
+import jsPDF from "jspdf"
 
 interface RefractiveResult {
   classification: string
@@ -40,7 +43,9 @@ export default function RefractiveAnalysisPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [result, setResult] = useState<RefractiveResult | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [downloadingPdf, setDownloadingPdf] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const resultsRef = useRef<HTMLDivElement>(null)
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -105,12 +110,81 @@ export default function RefractiveAnalysisPage() {
     }
   }
 
-  const getPrescriptionDescription = (sphericalEquivalent: number) => {
-    const abs = Math.abs(sphericalEquivalent)
-    if (abs < 0.25) return "No significant refractive error"
-    if (sphericalEquivalent < 0) return `Myopia (nearsightedness): ${Math.abs(sphericalEquivalent).toFixed(2)}D`
-    return `Hyperopia (farsightedness): +${sphericalEquivalent.toFixed(2)}D`
+  const downloadPdf = async () => {
+    if (!resultsRef.current || !result) return
+
+    setDownloadingPdf(true)
+    try {
+      console.log('Starting PDF generation...')
+
+      // Create a new PDF document
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      })
+
+      // Add header
+      doc.setFontSize(20)
+      doc.setTextColor(40, 40, 40)
+      doc.text('Myopia Classification Analysis Report', 20, 30)
+
+      // Add date
+      doc.setFontSize(12)
+      doc.setTextColor(100, 100, 100)
+      doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 40)
+
+      // Add main result
+      doc.setFontSize(16)
+      doc.setTextColor(40, 40, 40)
+      doc.text('Analysis Results:', 20, 60)
+
+      doc.setFontSize(14)
+      doc.text(`Classification: ${result.classification}`, 20, 75)
+      doc.text(`Confidence: ${(result.confidence * 100).toFixed(1)}%`, 20, 85)
+      doc.text(`Quality Level: ${result.quality_assessment.quality_level}`, 20, 95)
+      doc.text(`Overall Score: ${result.quality_assessment.overall_score.toFixed(1)}%`, 20, 105)
+
+      // Add quality metrics
+      doc.text('Quality Metrics:', 20, 125)
+      doc.setFontSize(12)
+      doc.text(`Resolution: ${result.quality_assessment.metrics.resolution_score.toFixed(1)}%`, 25, 135)
+      doc.text(`Contrast: ${result.quality_assessment.metrics.contrast_score.toFixed(1)}%`, 25, 145)
+      doc.text(`Brightness: ${result.quality_assessment.metrics.brightness_score.toFixed(1)}%`, 25, 155)
+      doc.text(`Sharpness: ${result.quality_assessment.metrics.sharpness_score.toFixed(1)}%`, 25, 165)
+
+      // Add recommendations
+      if (result.recommendations && result.recommendations.length > 0) {
+        doc.setFontSize(14)
+        doc.text('Recommendations:', 20, 185)
+        doc.setFontSize(12)
+        let yPos = 195
+        result.recommendations.forEach((rec, index) => {
+          doc.text(`${index + 1}. ${rec}`, 25, yPos)
+          yPos += 10
+        })
+      }
+
+      // Add footer
+      doc.setFontSize(10)
+      doc.setTextColor(150, 150, 150)
+      doc.text('This report is for informational purposes only. Consult a healthcare professional for medical advice.', 20, 280)
+
+      // Save the PDF
+      const filename = `myopia-analysis-${new Date().toISOString().split('T')[0]}.pdf`
+      doc.save(filename)
+
+      console.log('PDF generated successfully!')
+      toast.success('PDF report downloaded successfully!')
+    } catch (err) {
+      console.error('Error generating PDF:', err)
+      toast.error('Failed to generate PDF. Please try again.')
+    } finally {
+      setDownloadingPdf(false)
+    }
   }
+
+
 
   const getQualityColor = (level: string) => {
     switch (level) {
@@ -122,16 +196,7 @@ export default function RefractiveAnalysisPage() {
     }
   }
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'normal': return 'bg-green-100 text-green-800'
-      case 'mild': return 'bg-blue-100 text-blue-800'
-      case 'moderate': return 'bg-yellow-100 text-yellow-800'
-      case 'high': return 'bg-orange-100 text-orange-800'
-      case 'very_high': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
-  }
+
 
   return (
     <div className="min-h-screen">
@@ -201,6 +266,8 @@ export default function RefractiveAnalysisPage() {
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
+                  aria-label="Upload fundus image for myopia analysis"
+                  title="Select a fundus image file"
                   onChange={handleFileSelect}
                   className="hidden"
                 />
@@ -249,7 +316,7 @@ export default function RefractiveAnalysisPage() {
                 )}
 
                 {result && (
-                  <div className="space-y-6">
+                  <div ref={resultsRef} className="space-y-6">
                     {/* Main Result */}
                     <div className="text-center p-6 glass-strong rounded-lg">
                       <h3 className="text-2xl font-bold refractive-text mb-2">
@@ -346,6 +413,55 @@ export default function RefractiveAnalysisPage() {
                         </div>
                       </div>
                     )}
+
+                    {/* Share and Download Options */}
+                    <div className="flex flex-wrap gap-3 justify-center pt-4 border-t border-gray-700">
+                      <ShareableLinks
+                        testResult={{
+                          id: 'current-myopia-test',
+                          date: new Date().toISOString(),
+                          type: 'eye_disease',
+                          predicted_class: result.classification,
+                          confidence: result.confidence,
+                          status: result.classification === 'Myopia' ? 'abnormal' : 'normal',
+                          all_scores: result.class_probabilities || {}
+                        }}
+                        trigger={
+                          <Button
+                            variant="outline"
+                            className="border-purple-500/50 text-white hover:bg-purple-500/10 bg-black"
+                          >
+                            <ArrowRight className="w-4 h-4 mr-2" />
+                            Share Results
+                          </Button>
+                        }
+                      />
+                      <EmailButton
+                        type="comprehensive"
+                        variant="outline"
+                        className="border-purple-500/50 text-white hover:bg-purple-500/10 bg-black"
+                      >
+                        Email Report
+                      </EmailButton>
+                      <Button
+                        onClick={downloadPdf}
+                        disabled={downloadingPdf}
+                        variant="outline"
+                        className="flex items-center gap-2 border-blue-500/50 text-white hover:bg-blue-500/10 bg-black"
+                      >
+                        {downloadingPdf ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Download className="h-4 w-4" />
+                            Download PDF
+                          </>
+                        )}
+                      </Button>
+                    </div>
 
                     {/* Demo Note */}
                     {result.note && (

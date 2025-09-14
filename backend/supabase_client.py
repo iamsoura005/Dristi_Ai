@@ -10,7 +10,12 @@ from datetime import datetime, timezone
 import uuid
 from supabase import create_client, Client
 from postgrest import APIError
-from storage3.exceptions import StorageException
+try:
+    from storage3.exceptions import StorageException
+except ImportError:
+    # Fallback for different storage3 versions
+    class StorageException(Exception):
+        pass
 from dotenv import load_dotenv
 
 # Load environment variables

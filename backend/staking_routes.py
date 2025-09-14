@@ -32,9 +32,18 @@ def _calc_rewards(position: StakingPosition) -> float:
 
 
 @staking_bp.route('/summary', methods=['GET'])
-@jwt_required()
+@jwt_required(optional=True)
 def get_summary():
     user_id = get_jwt_identity()
+
+    if not user_id:
+        return jsonify({
+            'error': 'Authentication required',
+            'drst_balance': 0,
+            'total_staked': 0,
+            'total_rewards': 0,
+            'active_positions': []
+        }), 401
 
     # Wallet balances
     wallet_service = get_wallet_service()
@@ -167,9 +176,13 @@ def unstake_tokens():
 
 
 @staking_bp.route('/history', methods=['GET'])
-@jwt_required()
+@jwt_required(optional=True)
 def staking_history():
     user_id = get_jwt_identity()
+
+    if not user_id:
+        return jsonify({'error': 'Authentication required', 'history': []}), 401
+
     txs = StakingTransaction.query.filter_by(user_id=user_id).order_by(StakingTransaction.created_at.desc()).limit(100).all()
     return jsonify({'success': True, 'history': [t.to_dict() for t in txs]})
 

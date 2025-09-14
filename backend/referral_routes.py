@@ -16,9 +16,12 @@ def _generate_code() -> str:
 
 
 @referral_bp.route('/my-code', methods=['GET'])
-@jwt_required()
+@jwt_required(optional=True)
 def my_code():
     user_id = get_jwt_identity()
+
+    if not user_id:
+        return jsonify({'error': 'Authentication required', 'code': None}), 401
 
     # Try to find an existing generated code for this user without conversion
     existing = Referral.query.filter_by(referrer_user_id=user_id).order_by(Referral.created_at.asc()).first()
@@ -88,9 +91,12 @@ def register_attribution():
 
 
 @referral_bp.route('/stats', methods=['GET'])
-@jwt_required()
+@jwt_required(optional=True)
 def stats():
     user_id = get_jwt_identity()
+
+    if not user_id:
+        return jsonify({'error': 'Authentication required', 'stats': None}), 401
 
     refs = Referral.query.filter_by(referrer_user_id=user_id).all()
     total = len(refs)
@@ -122,8 +128,12 @@ def stats():
 
 
 @referral_bp.route('/leaderboard', methods=['GET'])
-@jwt_required()
+@jwt_required(optional=True)
 def leaderboard():
+    user_id = get_jwt_identity()
+
+    if not user_id:
+        return jsonify({'error': 'Authentication required', 'leaderboard': []}), 401
     # Top referrers by conversions
     # Simple raw SQL-like aggregation using Python for SQLite simplicity
     # In production, use proper GROUP BY queries

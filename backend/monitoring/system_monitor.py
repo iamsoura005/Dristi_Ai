@@ -12,8 +12,8 @@ import smtplib
 import asyncio
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Tuple
-from email.mime.text import MimeText
-from email.mime.multipart import MimeMultipart
+from email.mime.text import MIMEText as MimeText
+from email.mime.multipart import MIMEMultipart as MimeMultipart
 import psutil
 import requests
 from dataclasses import dataclass, asdict
