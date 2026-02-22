@@ -4,9 +4,16 @@ from models import db, User, UserRole, TestResult
 from datetime import datetime, timedelta
 import re
 import secrets
-from eth_account.messages import encode_defunct
-from eth_account import Account
-from web3 import Web3
+try:
+    from eth_account.messages import encode_defunct
+    from eth_account import Account
+    from web3 import Web3
+    WEB3_AUTH_AVAILABLE = True
+except ImportError:
+    encode_defunct = None  # type: ignore
+    Account = None  # type: ignore
+    Web3 = None  # type: ignore
+    WEB3_AUTH_AVAILABLE = False
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -169,11 +176,17 @@ def get_wallet_nonce():
             return jsonify({'error': 'Wallet address is required'}), 400
 
         # Validate Ethereum address format
-        if not Web3.is_address(wallet_address):
+        if WEB3_AUTH_AVAILABLE and Web3 is not None:
+            is_valid_address = Web3.is_address(wallet_address)
+        else:
+            is_valid_address = bool(re.match(r'^0x[a-fA-F0-9]{40}$', wallet_address))
+
+        if not is_valid_address:
             return jsonify({'error': 'Invalid wallet address format'}), 400
 
-        # Normalize address to checksum format
-        wallet_address = Web3.to_checksum_address(wallet_address)
+        # Normalize address to checksum format when Web3 is available
+        if WEB3_AUTH_AVAILABLE and Web3 is not None:
+            wallet_address = Web3.to_checksum_address(wallet_address)
 
         # Generate a random nonce
         nonce = secrets.token_hex(16)
@@ -201,6 +214,9 @@ def verify_wallet_signature():
 
         if not all([wallet_address, signature, message]):
             return jsonify({'error': 'Wallet address, signature, and message are required'}), 400
+
+        if not WEB3_AUTH_AVAILABLE or Web3 is None or Account is None or encode_defunct is None:
+            return jsonify({'error': 'Wallet signature verification is unavailable on this server'}), 503
 
         # Validate Ethereum address format
         if not Web3.is_address(wallet_address):
