@@ -45,3 +45,7 @@ seaborn>=0.12.0  # Statistical data visualization
 opencv-python>=4.8.0  # Computer vision library
 Pillow>=10.0.0  # Python Imaging Library (already included above)
 requests>=2.31.0  # HTTP library (already included above)
+# Blockchain authentication dependencies
+web3>=6.15.0
+eth-account>=0.11.3
+

@@ -82,13 +82,19 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///hac
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Configure OpenRouter API for DeepSeek
-OPENROUTER_API_KEY = "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"
-print(f"🔑 Configuring OpenRouter API with key: {OPENROUTER_API_KEY[:20]}...")
+OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
+
+if OPENROUTER_API_KEY:
+    print("🔑 Configuring OpenRouter API from environment variable...")
+else:
+    print("⚠️ OPENROUTER_API_KEY is not set. AI chat features will be disabled.")
+
 try:
     import openai
-    openai.api_key = OPENROUTER_API_KEY
-    openai.api_base = "https://openrouter.ai/api/v1"
-    print("✅ OpenRouter API configured successfully!")
+    if OPENROUTER_API_KEY:
+        openai.api_key = OPENROUTER_API_KEY
+        openai.api_base = "https://openrouter.ai/api/v1"
+        print("✅ OpenRouter API configured successfully!")
 except Exception as e:
     print(f"❌ Error configuring OpenRouter API: {str(e)}")
 
